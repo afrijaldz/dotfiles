@@ -104,3 +104,8 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# pnpm
+export PNPM_HOME="/Users/DZ8074/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
