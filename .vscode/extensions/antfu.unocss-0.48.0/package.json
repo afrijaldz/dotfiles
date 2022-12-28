@@ -1,0 +1,91 @@
+{
+	"publisher": "antfu",
+	"name": "unocss",
+	"displayName": "UnoCSS",
+	"version": "0.48.0",
+	"private": true,
+	"description": "UnoCSS for VS Code",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/unocss/unocss",
+		"directory": "packages/vscode"
+	},
+	"categories": [
+		"Other"
+	],
+	"main": "./dist/index.js",
+	"preview": true,
+	"icon": "res/logo.png",
+	"engines": {
+		"vscode": "^1.71.0"
+	},
+	"activationEvents": [
+		"onStartupFinished"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "unocss.reload",
+				"title": "Reload UnoCSS",
+				"category": "UnoCSS"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "UnoCSS",
+			"properties": {
+				"unocss.disable": {
+					"type": "boolean",
+					"default": false,
+					"description": "Disable the UnoCSS extension"
+				},
+				"unocss.root": {
+					"type": "string",
+					"description": "Project root that contains the UnoCSS configuration file"
+				},
+				"unocss.underline": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable/disable underline decoration for class names"
+				},
+				"unocss.colorPreview": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable/disable color preview decorations"
+				},
+				"unocss.selectionStyle": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable/disable selection style decorations"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"build": "tsup",
+		"dev": "tsup --watch src",
+		"publish": "esno ./scripts/publish.ts"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.71.0",
+		"@unocss/nuxt": "workspace:*",
+		"@unocss/preset-uno": "workspace:*",
+		"esno": "^0.16.3",
+		"jiti": "^1.16.0",
+		"prettier": "^2.8.1",
+		"tsup": "^6.5.0",
+		"unconfig": "^0.3.7"
+	},
+	"__metadata": {
+		"id": "55f2cc0f-acb9-4fb0-bf94-e0328e3c43fd",
+		"publisherId": "f20453fe-720b-4a02-8838-84ab3fdc1b74",
+		"publisherDisplayName": "Anthony Fu",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"updated": true,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1671624438124,
+		"preRelease": false
+	}
+}

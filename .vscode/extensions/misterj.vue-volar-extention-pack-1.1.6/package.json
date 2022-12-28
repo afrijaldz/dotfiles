@@ -1,0 +1,49 @@
+{
+	"name": "vue-volar-extention-pack",
+	"displayName": "Vue Volar extension Pack",
+	"description": "This extension packs uses volar for vue projects.",
+	"version": "1.1.6",
+	"publisher": "MisterJ",
+	"icon": "images/icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/BroJenuel/vue-volar-extension-pack"
+	},
+	"scripts": {
+		"package": "vsce package",
+		"publish": "vsce publish"
+	},
+	"engines": {
+		"vscode": "^1.61.0"
+	},
+	"categories": [
+		"Extension Packs"
+	],
+	"extensionPack": [
+		"xabikos.javascriptsnippets",
+		"christian-kohler.path-intellisense",
+		"formulahendry.auto-close-tag",
+		"formulahendry.auto-rename-tag",
+		"steoates.autoimport",
+		"syler.sass-indented",
+		"mikestead.dotenv",
+		"sibiraj-s.vscode-scss-formatter",
+		"esbenp.prettier-vscode",
+		"wscats.vue",
+		"sdras.vue-vscode-snippets",
+		"dbaeumer.vscode-eslint",
+		"Vue.volar",
+		"Vue.vscode-typescript-vue-plugin"
+	],
+	"__metadata": {
+		"id": "3ceb4a20-6b82-415f-bd19-2360d4789a87",
+		"publisherId": "9e0a9ff0-4d76-4b1f-ba21-13655ad836fd",
+		"publisherDisplayName": "BroJenuel",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"updated": true,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1670950595576,
+		"preRelease": false
+	}
+}

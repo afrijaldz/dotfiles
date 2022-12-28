@@ -1,9 +1,10 @@
+set nocompatible
 autocmd vimenter * NERDTree
-set relativenumber
 nmap <F6> :NERDTreeToggle<CR>
 
-syntax on
+syntax enable
 colorscheme monokai
+
 let g:user_emmet_leader_key=','
 
 set ts=2
@@ -12,6 +13,7 @@ set sw=4
 set et     "expand tabs to spaces
 
 set ignorecase
+set relativenumber
 
 autocmd FileType javascript.jsx setlocal commentstring={/*\ %s\ */}
 
