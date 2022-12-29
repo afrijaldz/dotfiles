@@ -12,11 +12,12 @@ set ic                    " ignore case sensitive
 set ignorecase            " Make searches case-insensitive.
 set ruler                 " Always show info along bottom.
 set autoindent            " auto-indent
+set smartindent           " smart-indent
+set expandtab             " use spaces instead of tabs
 set tabstop=2             " tab spacing
-set softtabstop=4         " unify
+set softtabstop=2         " unify
 set shiftwidth=2          " indent/outdent by 4 columns
 set shiftround            " always indent/outdent to the nearest tabstop
-set expandtab             " use spaces instead of tabs
 set smarttab              " use tabs at the start of a line, spaces elsewhere
 set nowrap                " don't wrap text
 highlight Visual ctermfg=yellow ctermbg=blue
