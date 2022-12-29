@@ -21,3 +21,7 @@ set shiftround            " always indent/outdent to the nearest tabstop
 set smarttab              " use tabs at the start of a line, spaces elsewhere
 set nowrap                " don't wrap text
 highlight Visual ctermfg=yellow ctermbg=blue
+
+call plug#begin()
+  Plug 'preservim/nerdtree'
+call plug#end()
