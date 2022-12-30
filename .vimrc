@@ -26,9 +26,9 @@ call plug#begin()
   Plug 'preservim/nerdtree'
 call plug#end()
 
+imap jj <esc>
+
 nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
 nnoremap <C-f> :NERDTreeFind<CR>
-
-autocmd VimEnter * NERDTree
