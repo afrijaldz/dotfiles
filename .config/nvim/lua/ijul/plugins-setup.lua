@@ -46,6 +46,12 @@ return packer.startup(function(use)
   -- file explorer
   use("nvim-tree/nvim-tree.lua")
 
+  -- icons
+  use("kyazdani42/nvim-web-devicons")
+
+  -- statusline
+  use("nvim-lualine/lualine.nvim")
+
 
   if packer_bootstrap then
     require("packer").sync()
