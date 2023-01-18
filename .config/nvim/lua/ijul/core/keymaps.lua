@@ -1,4 +1,6 @@
 vim.g.mapleader = " "
+vim.g.blamer_enabled = 1
+vim.g.blamer_show_in_insert_modes = 1
 
 local keymap = vim.keymap
 
@@ -26,6 +28,9 @@ keymap.set("n", "<leader>sm", ":MaximizerToggle<CR>")
 
 -- nvim-tree
 keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
+
+-- git blame
+keymap.set("n", "<leader>bl", ":BlamerToggle<CR>")
 
 -- telescope
 keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<CR>")
