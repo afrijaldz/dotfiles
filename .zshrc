@@ -119,3 +119,10 @@ export PATH="$PNPM_HOME:$PATH"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+export PATH="/usr/local/opt/php@7.4/bin:$PATH"
+export PATH="/usr/local/opt/php@7.4/sbin:$PATH"
+
+
+export LDFLAGS="-L/usr/local/opt/php@7.4/lib"
+export CPPFLAGS="-I/usr/local/opt/php@7.4/include"
