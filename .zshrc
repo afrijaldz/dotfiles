@@ -115,6 +115,7 @@ source $ZSH/oh-my-zsh.sh
 # pnpm
 export PNPM_HOME="/Users/DZ8074/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
+alias pn=pnpm
 # pnpm end
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -126,3 +127,5 @@ export PATH="/usr/local/opt/php@7.4/sbin:$PATH"
 
 export LDFLAGS="-L/usr/local/opt/php@7.4/lib"
 export CPPFLAGS="-I/usr/local/opt/php@7.4/include"
+
+alias td=tmux\ detach
