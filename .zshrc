@@ -129,3 +129,12 @@ export LDFLAGS="-L/usr/local/opt/php@7.4/lib"
 export CPPFLAGS="-I/usr/local/opt/php@7.4/include"
 
 alias td=tmux\ detach
+
+[ -f "/Users/DZ8074/.ghcup/env" ] && source "/Users/DZ8074/.ghcup/env" # ghcup-envexport DVM_DIR="/Users/DZ8074/.dvm"
+export PATH="$DVM_DIR/bin:$PATH"
+export DVM_DIR="/Users/DZ8074/.dvm"
+export PATH="$DVM_DIR/bin:$PATH"
+
+fpath=(~/.zsh $fpath)
+autoload -Uz compinit
+compinit -u
