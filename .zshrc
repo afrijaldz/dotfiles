@@ -112,12 +112,6 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-# pnpm
-export PNPM_HOME="/Users/DZ8074/Library/pnpm"
-export PATH="$PNPM_HOME:$PATH"
-alias pn=pnpm
-# pnpm end
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
@@ -130,6 +124,8 @@ export CPPFLAGS="-I/usr/local/opt/php@7.4/include"
 
 alias td=tmux\ detach
 
+alias sail='[ -f sail ] && sh sail || sh vendor/bin/sail'
+
 [ -f "/Users/DZ8074/.ghcup/env" ] && source "/Users/DZ8074/.ghcup/env" # ghcup-envexport DVM_DIR="/Users/DZ8074/.dvm"
 export PATH="$DVM_DIR/bin:$PATH"
 export DVM_DIR="/Users/DZ8074/.dvm"
@@ -138,3 +134,17 @@ export PATH="$DVM_DIR/bin:$PATH"
 fpath=(~/.zsh $fpath)
 autoload -Uz compinit
 compinit -u
+
+export PATH="/usr/local/opt/postgresql@13/bin:$PATH"
+
+eval "$(fnm env --use-on-cd)"
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+
+export LDFLAGS="-L/opt/homebrew/opt/ruby/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/ruby/include"
+
+export PATH="/Users/DZ8074/.deno/bin:$PATH"
+
+#alias yarnn='cp -R ~/Documents/bersih/pondasi-satu/* . && echo "zsh: command not found"'
+export PATH="/opt/homebrew/opt/php@8.1/bin:$PATH"
+export PATH="/opt/homebrew/opt/php@8.1/sbin:$PATH"

@@ -16,6 +16,11 @@ if not typescript_setup then
   return
 end
 
+local deno_setup, deno = pcall(require, "denols")
+if not deno_setup then
+  return
+end
+
 local keymap = vim.keymap -- for conciseness
 
 -- enable keybinds only for when lsp server available
@@ -67,7 +72,14 @@ typescript.setup({
   server = {
     capabilities = capabilities,
     on_attach = on_attach,
+    root_dir = lspconfig.util.root_pattern("package.json"),
+    single_file_support = false
   },
+})
+
+lspconfig['denols'].setup({
+  on_attach = on_attach,
+  root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc")
 })
 
 -- configure css server

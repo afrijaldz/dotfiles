@@ -1,0 +1,58 @@
+{
+	"name": "language-postcss",
+	"displayName": "language-postcss",
+	"description": "PostCSS language support",
+	"version": "1.1.0",
+	"publisher": "cpylua",
+	"engines": {
+		"vscode": "^1.14.0"
+	},
+	"icon": "postcss.png",
+	"categories": [
+		"Programming Languages"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cpylua/vscode-language-postcss"
+	},
+	"keywords": [
+		"postcss",
+		"syntax",
+		"grammar",
+		"language",
+		"vscode"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "postcss",
+				"aliases": [
+					"PostCSS",
+					"postcss"
+				],
+				"extensions": [
+					".pcss",
+					".postcss"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "postcss",
+				"scopeName": "source.postcss",
+				"path": "./syntaxes/postcss.tmLanguage"
+			}
+		]
+	},
+	"__metadata": {
+		"id": "6618b055-469c-4f8e-860b-1d25f70d8852",
+		"publisherId": "65ee18ae-731e-4c08-8eff-b9b80d1c7b6e",
+		"publisherDisplayName": "Li Chen",
+		"targetPlatform": "undefined",
+		"updated": false,
+		"isPreReleaseVersion": false,
+		"installedTimestamp": 1701790666888,
+		"preRelease": false
+	}
+}
