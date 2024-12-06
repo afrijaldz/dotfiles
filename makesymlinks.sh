@@ -10,6 +10,8 @@ dir=~/dotfiles                                                        # dotfiles
 olddir=~/dotfiles_old                                                 # old dotfiles backup directory
 files="bashrc vimrc vim zshrc vscode oh-my-zsh tmux.conf config/nvim" # list of files/folders to symlink in homedir
 
+rm -rf ~/.local/share/nvim ~/.cache/nvim
+
 ##########
 
 # create dotfiles_old in homedir
