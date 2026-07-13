@@ -115,7 +115,50 @@ else
 fi
 
 # ──────────────────────────────
-# 7. Symlink config files
+# 7. Migrate existing .zshrc → .zshrc.local
+# ──────────────────────────────
+OLD_ZSH="$HOME/.zshrc"
+DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
+LOCAL_ZSH="$HOME/.zshrc.local"
+
+if [ -f "$OLD_ZSH" ] && [ ! -L "$OLD_ZSH" ] && [ ! -f "$LOCAL_ZSH" ]; then
+  echo "==> Migrating machine-specific config from old .zshrc to .zshrc.local..."
+
+  python3 -c "
+with open('$OLD_ZSH') as f:
+    old_lines = [l.rstrip() for l in f.readlines()]
+
+with open('$DOTFILES_ZSH') as f:
+    new_lines = [l.rstrip() for l in f.readlines()]
+
+new_set = set(new_lines)
+local_lines = []
+prev_blank = False
+
+for line in old_lines:
+    if line in new_set:
+        prev_blank = False
+        continue
+    # Collapse consecutive blank lines
+    if line == '':
+        if prev_blank:
+            continue
+        prev_blank = True
+    else:
+        prev_blank = False
+    local_lines.append(line)
+
+result = '\n'.join(local_lines).strip()
+if result:
+    with open('$LOCAL_ZSH', 'w') as f:
+        f.write(result + '\n')
+    print('    wrote: $LOCAL_ZSH')
+else:
+    print('    nothing to migrate (config was identical)')
+"
+fi
+# ──────────────────────────────
+# 8. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -148,7 +191,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 8. Done — summary
+# 9. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
