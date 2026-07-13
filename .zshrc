@@ -30,6 +30,7 @@ export EDITOR='nvim'
 
 # Aliases
 alias td='tmux detach'
+alias v='nvim'
 
 # Machine-specific config (NVM, Bun, Solana, PHP, etc.)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
