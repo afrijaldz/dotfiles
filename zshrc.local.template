@@ -1,0 +1,46 @@
+# ==============================
+# MACHINE-SPECIFIC CONFIG — Mac (wei)
+# ==============================
+# Sourced from ~/.zshrc after the shared dotfiles config.
+# Safe to edit — NOT tracked in git.
+
+# ── Homebrew (Apple Silicon) ──
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# ── atuin ──
+eval "$(atuin init zsh)"
+
+# ── NVM ──
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# ── Bun ──
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+[ -s "/Users/wei/.bun/_bun" ] && source "/Users/wei/.bun/_bun"
+
+# ── Solana CLI ──
+export PATH="$HOME/.local/share/solana/install/active_release/bin:$PATH"
+
+# ── Herd (PHP) ──
+export PATH="/Users/wei/.config/herd-lite/bin:$PATH"
+export PHP_INI_SCAN_DIR="/Users/wei/.config/herd-lite/bin:$PHP_INI_SCAN_DIR"
+
+# ── Antigravity ──
+export PATH="/Users/wei/.antigravity/antigravity/bin:$PATH"
+
+# ── TeX Live ──
+export PATH="/usr/local/texlive/2026basic/bin/universal-darwin:$PATH"
+
+# ── OpenCode ──
+export PATH=/Users/wei/.opencode/bin:$PATH
+
+# ── Local bin ──
+export PATH="$HOME/.local/bin:$PATH"
+
+# ── Aliases ──
+alias v=nvim
+
+# ── libpq (uncomment if needed) ──
+# export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
