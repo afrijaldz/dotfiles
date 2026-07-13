@@ -77,5 +77,6 @@ It is automatically sourced by the shared `.zshrc`.
 │   ├── tmux/tmux.conf      # Tmux config
 │   └── nvim/               # Neovim config (LazyVim)
 ├── bootstrap.sh            # One-command setup script
+├── KEYMAPS.md              # Tmux & Neovim keybindings
 └── README.md
 ```
