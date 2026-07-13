@@ -1,6 +1,8 @@
 # ==============================
 # ZSH CONFIG — afrijaldz/dotfiles
 # ==============================
+# Shared config for all machines.
+# Machine-specific overrides go in ~/.zshrc.local (not tracked in git).
 
 # Enable Powerlevel10k instant prompt
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -23,16 +25,17 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-# User configuration
-
 # Editor
 export EDITOR='nvim'
 
 # Aliases
 alias td='tmux detach'
 
-# Local/machine-specific config (Hermes env, etc.)
-[[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
+# Machine-specific config (NVM, Bun, Solana, PHP, etc.)
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # p10k prompt config
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Hermes agent env (WSL)
+[[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
