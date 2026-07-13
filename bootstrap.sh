@@ -40,7 +40,31 @@ if [ "$SHELL" != "$(command -v zsh)" ]; then
 fi
 
 # ──────────────────────────────
-# 2. Install oh-my-zsh
+# 2. Install Nerd Font
+# ──────────────────────────────
+FONT_NAME="MesloLGS NF"
+FONT_INSTALLED=false
+
+case "$PLATFORM" in
+  macos)
+    if fc-list | grep -iq "MesloLGS"; then
+      FONT_INSTALLED=true
+    else
+      echo "==> Installing MesloLGS Nerd Font..."
+      brew tap --quiet homebrew/cask-fonts 2>/dev/null || true
+      brew install --quiet --cask font-meslo-lg-nerd-font 2>/dev/null && FONT_INSTALLED=true || true
+    fi
+    ;;
+  linux)
+    # Check if MesloLGS is available on the system
+    if fc-list 2>/dev/null | grep -iq "MesloLGS"; then
+      FONT_INSTALLED=true
+    fi
+    ;;
+esac
+
+# ──────────────────────────────
+# 3. Install oh-my-zsh
 # ──────────────────────────────
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "==> Installing oh-my-zsh..."
@@ -52,7 +76,7 @@ fi
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # ──────────────────────────────
-# 3. Install Powerlevel10k
+# 4. Install Powerlevel10k
 # ──────────────────────────────
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "==> Installing Powerlevel10k..."
@@ -62,7 +86,7 @@ else
 fi
 
 # ──────────────────────────────
-# 4. Install zsh plugins
+# 5. Install zsh plugins
 # ──────────────────────────────
 install_zsh_plugin() {
   local name="$1"
@@ -80,7 +104,7 @@ install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-s
 install_zsh_plugin "zsh-autosuggestions"     "https://github.com/zsh-users/zsh-autosuggestions.git"
 
 # ──────────────────────────────
-# 5. Install TPM (tmux plugin manager)
+# 6. Install TPM (tmux plugin manager)
 # ──────────────────────────────
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
@@ -92,7 +116,7 @@ else
 fi
 
 # ──────────────────────────────
-# 6. Symlink config files
+# 7. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -124,14 +148,28 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 7. Done
+# 8. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
 echo "    Backup of old dotfiles: $BACKUP_DIR"
 echo ""
+
 echo "Next steps:"
 echo "  1. Restart your shell or run: source ~/.zshrc"
 echo "  2. Log out & back in (or restart WSL) if default shell was changed"
 echo "  3. Open tmux and press prefix+I to install TPM plugins"
 echo "  4. Run 'p10k configure' if you want to customize the prompt"
+
+if [ "$FONT_INSTALLED" = false ]; then
+  echo ""
+  echo "==> Font: $FONT_NAME not detected."
+  case "$PLATFORM" in
+    macos)
+      echo "    Install manually: brew install --cask font-meslo-lg-nerd-font" ;;
+    linux)
+      echo "    Download & install MesloLGS NF on your Windows host:"
+      echo "    https://github.com/romkatv/powerlevel10k#manual-font-installation"
+      echo "    Then set font in Windows Terminal settings to 'MesloLGS NF'" ;;
+  esac
+fi
