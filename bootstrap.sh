@@ -4,7 +4,7 @@
 # ==============================
 # Usage: cd ~/dotfiles && ./bootstrap.sh
 # Installs dependencies & symlinks config files.
-# Supports macOS and Linux (WSL/Ubuntu).
+# Supports macOS and Linux (any distro).
 # ==============================
 
 set -e
@@ -21,12 +21,44 @@ case "$OS" in
 esac
 echo "==> Platform: $PLATFORM"
 
+# Detect package manager
+detect_pkg_manager() {
+  if command -v brew &>/dev/null; then
+    PKG_MANAGER="brew"
+    PKG_INSTALL="brew install"
+  elif command -v apt-get &>/dev/null; then
+    PKG_MANAGER="apt"
+    PKG_INSTALL="sudo apt-get install -y"
+    PKG_UPDATE="sudo apt-get update -qq"
+  elif command -v dnf &>/dev/null; then
+    PKG_MANAGER="dnf"
+    PKG_INSTALL="sudo dnf install -y"
+  elif command -v pacman &>/dev/null; then
+    PKG_MANAGER="pacman"
+    PKG_INSTALL="sudo pacman -S --noconfirm"
+  elif command -v zypper &>/dev/null; then
+    PKG_MANAGER="zypper"
+    PKG_INSTALL="sudo zypper install -y"
+  elif command -v apk &>/dev/null; then
+    PKG_MANAGER="apk"
+    PKG_INSTALL="sudo apk add"
+  else
+    PKG_MANAGER=""
+    echo "Warning: No supported package manager found."
+    echo "  Please install zsh, git, curl, tmux, neovim manually."
+  fi
+}
+detect_pkg_manager
+echo "==> Package manager: ${PKG_MANAGER:-none}"
+
 # ──────────────────────────────
 # 1. Install Homebrew (macOS)
 # ──────────────────────────────
-if [ "$PLATFORM" = "macos" ] && ! command -v brew &>/dev/null; then
+if [ "$PLATFORM" = "macos" ] && [ "$PKG_MANAGER" != "brew" ]; then
   echo "==> Homebrew not found. Installing..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  PKG_MANAGER="brew"
+  PKG_INSTALL="brew install"
   echo "==> Homebrew installed"
 fi
 
@@ -35,9 +67,10 @@ fi
 # ──────────────────────────────
 if ! command -v zsh &>/dev/null; then
   echo "==> zsh not found. Installing..."
-  case "$PLATFORM" in
-    macos) brew install zsh ;;
-    linux) sudo apt-get update -qq && sudo apt-get install -y -qq zsh ;;
+  case "$PKG_MANAGER" in
+    brew) $PKG_INSTALL zsh ;;
+    apt)  $PKG_UPDATE && $PKG_INSTALL zsh ;;
+    *)    $PKG_INSTALL zsh ;;
   esac
 fi
 
@@ -45,7 +78,7 @@ fi
 if [ "$SHELL" != "$(command -v zsh)" ]; then
   echo "==> Changing default shell to zsh..."
   chsh -s "$(command -v zsh)"
-  echo "    You'll need to log out and back in (or restart WSL)."
+  echo "    You'll need to log out and back in (or restart your session)."
 fi
 
 # ──────────────────────────────
@@ -62,8 +95,8 @@ for pattern in "MesloLGS" "JetBrainsMono" "FiraCode" "Fira Code" "Hack" "Nerd Fo
 done
 
 if [ "$NERD_FONT_INSTALLED" = false ]; then
-  case "$PLATFORM" in
-    macos)
+  case "$PKG_MANAGER" in
+    brew)
       echo "==> Installing MesloLGS Nerd Font (recommended for p10k)..."
       brew tap --quiet homebrew/cask-fonts 2>/dev/null || true
       brew install --quiet --cask font-meslo-lg-nerd-font 2>/dev/null && NERD_FONT_INSTALLED=true || true
@@ -124,7 +157,43 @@ else
 fi
 
 # ──────────────────────────────
-# 8. Migrate existing .zshrc → .zshrc.local
+# 8. Install tmux clipboard helper
+# ──────────────────────────────
+TMUX_BIN_DIR="$HOME/.local/bin"
+mkdir -p "$TMUX_BIN_DIR"
+
+cat > "$TMUX_BIN_DIR/tmux-yank" << 'EOF'
+#!/bin/bash
+# Cross-platform clipboard yank for tmux
+# Detects available clipboard tool and pipes stdin to it.
+
+if command -v pbcopy &>/dev/null; then
+  # macOS
+  cat > /dev/null
+  pbcopy
+elif command -v clip.exe &>/dev/null; then
+  # WSL
+  clip.exe
+elif command -v wl-copy &>/dev/null; then
+  # Wayland
+  wl-copy
+elif command -v xclip &>/dev/null; then
+  # X11
+  xclip -selection clipboard
+elif command -v xsel &>/dev/null; then
+  # X11 (alternative)
+  xsel --clipboard --input
+else
+  # Fallback: show in tmux message
+  cat > /tmp/tmux-yank.txt
+  tmux display-message "No clipboard tool found. Yank saved to /tmp/tmux-yank.txt"
+fi
+EOF
+chmod +x "$TMUX_BIN_DIR/tmux-yank"
+echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
+
+# ──────────────────────────────
+# 9. Migrate existing .zshrc → .zshrc.local
 # ──────────────────────────────
 OLD_ZSH="$HOME/.zshrc"
 DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
@@ -166,8 +235,9 @@ else:
     print('    nothing to migrate (config was identical)')
 "
 fi
+
 # ──────────────────────────────
-# 9. Symlink config files
+# 10. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -200,7 +270,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 10. Done — summary
+# 11. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
@@ -209,19 +279,19 @@ echo ""
 
 echo "Next steps:"
 echo "  1. Restart your shell or run: source ~/.zshrc"
-echo "  2. Log out & back in (or restart WSL) if default shell was changed"
+echo "  2. Log out & back in if default shell was changed"
 echo "  3. Open tmux and press prefix+I to install TPM plugins"
 echo "  4. Run 'p10k configure' if you want to customize the prompt"
 
 if [ "$NERD_FONT_INSTALLED" = false ]; then
   echo ""
   echo "==> No Nerd Font detected. Powerlevel10k needs one for icons."
-  case "$PLATFORM" in
-    macos)
-      echo "    Install manually: brew install --cask font-meslo-lg-nerd-font" ;;
-    linux)
-      echo "    Download & install MesloLGS NF on your Windows host:"
-      echo "    https://github.com/romkatv/powerlevel10k#manual-font-installation"
-      echo "    Then set font in Windows Terminal settings to 'MesloLGS NF'" ;;
+  case "$PKG_MANAGER" in
+    brew)
+      echo "    Install: brew install --cask font-meslo-lg-nerd-font" ;;
+    *)
+      echo "    Download & install a Nerd Font (e.g. MesloLGS NF):"
+      echo "    https://github.com/romkatv/powerlevel10k#fonts"
+      echo "    Then configure your terminal to use it." ;;
   esac
 fi

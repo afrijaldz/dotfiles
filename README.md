@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal dotfiles for macOS and Linux (WSL/Ubuntu). Consistent development environment across all machines.
+Personal dotfiles for macOS and Linux. Consistent development environment across all machines.
 
 ## What's included
 
@@ -24,9 +24,11 @@ cd ~/dotfiles && ./bootstrap.sh
 
 The bootstrap script handles:
 - Installing zsh (if missing) and setting it as the default shell
+- Detecting your package manager (apt, dnf, pacman, zypper, apk, brew)
 - Installing oh-my-zsh, Powerlevel10k, zsh plugins
-- Installing TPM (Tmux Plugin Manager)
+- Installing TPM (Tmux Plugin Manager) and a cross-platform clipboard helper
 - Symlinking all config files (backs up existing ones first)
+- Auto-migrating your existing `.zshrc` to `.zshrc.local` (machine-specific config)
 
 ## Manual setup
 
@@ -51,22 +53,10 @@ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.
 git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
 
-## First-time setup per platform
+## Machine-specific config
 
-### macOS
-Most tools are already available via Homebrew. Bootstrap should work out of the box.
-
-### WSL / Ubuntu
-```bash
-# Install dependencies
-sudo apt update && sudo apt install zsh git curl tmux neovim -y
-
-# Clone and bootstrap
-git clone git@github.com:afrijaldz/dotfiles.git ~/dotfiles
-cd ~/dotfiles && ./bootstrap.sh
-
-# Restart WSL or log out & back in for shell change to take effect
-```
+Place local overrides in `~/.zshrc.local` (not tracked in git).
+It is automatically sourced by the shared `.zshrc`.
 
 ## Post-install
 
