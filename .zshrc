@@ -31,5 +31,8 @@ export EDITOR='nvim'
 # Aliases
 alias td='tmux detach'
 
+# Local/machine-specific config (Hermes env, etc.)
+[[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
+
 # p10k prompt config
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

@@ -22,7 +22,25 @@ esac
 echo "==> Platform: $PLATFORM"
 
 # ──────────────────────────────
-# 1. Install oh-my-zsh
+# 1. Check / install zsh
+# ──────────────────────────────
+if ! command -v zsh &>/dev/null; then
+  echo "==> zsh not found. Installing..."
+  case "$PLATFORM" in
+    macos) brew install zsh ;;
+    linux) sudo apt-get update -qq && sudo apt-get install -y -qq zsh ;;
+  esac
+fi
+
+# Set zsh as default shell if not already
+if [ "$SHELL" != "$(command -v zsh)" ]; then
+  echo "==> Changing default shell to zsh..."
+  chsh -s "$(command -v zsh)"
+  echo "    You'll need to log out and back in (or restart WSL)."
+fi
+
+# ──────────────────────────────
+# 2. Install oh-my-zsh
 # ──────────────────────────────
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "==> Installing oh-my-zsh..."
@@ -34,7 +52,7 @@ fi
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # ──────────────────────────────
-# 2. Install Powerlevel10k
+# 3. Install Powerlevel10k
 # ──────────────────────────────
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "==> Installing Powerlevel10k..."
@@ -44,7 +62,7 @@ else
 fi
 
 # ──────────────────────────────
-# 3. Install zsh plugins
+# 4. Install zsh plugins
 # ──────────────────────────────
 install_zsh_plugin() {
   local name="$1"
@@ -62,7 +80,7 @@ install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-s
 install_zsh_plugin "zsh-autosuggestions"     "https://github.com/zsh-users/zsh-autosuggestions.git"
 
 # ──────────────────────────────
-# 4. Install TPM (tmux plugin manager)
+# 5. Install TPM (tmux plugin manager)
 # ──────────────────────────────
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
@@ -74,7 +92,7 @@ else
 fi
 
 # ──────────────────────────────
-# 5. Symlink config files
+# 6. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -92,7 +110,7 @@ link_file() {
     fi
   fi
   ln -sf "$src" "$dst"
-  echo "    linked: $dst → $src"
+  echo "    linked: $dst -> $src"
 }
 
 # Files in home directory
@@ -106,7 +124,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 6. Done
+# 7. Done
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
@@ -114,5 +132,6 @@ echo "    Backup of old dotfiles: $BACKUP_DIR"
 echo ""
 echo "Next steps:"
 echo "  1. Restart your shell or run: source ~/.zshrc"
-echo "  2. Open tmux and run prefix+I to install TPM plugins"
-echo "  3. Run 'p10k configure' if you want to customize the prompt"
+echo "  2. Log out & back in (or restart WSL) if default shell was changed"
+echo "  3. Open tmux and press prefix+I to install TPM plugins"
+echo "  4. Run 'p10k configure' if you want to customize the prompt"
