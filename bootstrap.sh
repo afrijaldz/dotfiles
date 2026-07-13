@@ -187,6 +187,18 @@ if command -v atuin &>/dev/null; then
   else
     echo "    atuin already configured in $LOCAL_ZSH"
   fi
+
+  # Import existing history if atuin db is empty
+  if [ ! -f "$HOME/.local/share/atuin/history.db" ]; then
+    if [ -f "$HOME/.bash_history" ] && [ -s "$HOME/.bash_history" ]; then
+      echo "==> Importing bash history to atuin..."
+      atuin import bash 2>/dev/null && echo "    done"
+    fi
+    if [ -f "$HOME/.zsh_history" ] && [ -s "$HOME/.zsh_history" ]; then
+      echo "==> Importing zsh history to atuin..."
+      atuin import zsh 2>/dev/null && echo "    done"
+    fi
+  fi
 else
   echo "==> atuin installation skipped (could not install)"
 fi
