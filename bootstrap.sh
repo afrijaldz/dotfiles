@@ -22,7 +22,16 @@ esac
 echo "==> Platform: $PLATFORM"
 
 # ──────────────────────────────
-# 1. Check / install zsh
+# 1. Install Homebrew (macOS)
+# ──────────────────────────────
+if [ "$PLATFORM" = "macos" ] && ! command -v brew &>/dev/null; then
+  echo "==> Homebrew not found. Installing..."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  echo "==> Homebrew installed"
+fi
+
+# ──────────────────────────────
+# 2. Check / install zsh
 # ──────────────────────────────
 if ! command -v zsh &>/dev/null; then
   echo "==> zsh not found. Installing..."
@@ -40,7 +49,7 @@ if [ "$SHELL" != "$(command -v zsh)" ]; then
 fi
 
 # ──────────────────────────────
-# 2. Install Nerd Font
+# 3. Install Nerd Font
 # ──────────────────────────────
 NERD_FONT_INSTALLED=false
 
@@ -63,7 +72,7 @@ if [ "$NERD_FONT_INSTALLED" = false ]; then
 fi
 
 # ──────────────────────────────
-# 3. Install oh-my-zsh
+# 4. Install oh-my-zsh
 # ──────────────────────────────
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
   echo "==> Installing oh-my-zsh..."
@@ -75,7 +84,7 @@ fi
 ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
 
 # ──────────────────────────────
-# 4. Install Powerlevel10k
+# 5. Install Powerlevel10k
 # ──────────────────────────────
 if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "==> Installing Powerlevel10k..."
@@ -85,7 +94,7 @@ else
 fi
 
 # ──────────────────────────────
-# 5. Install zsh plugins
+# 6. Install zsh plugins
 # ──────────────────────────────
 install_zsh_plugin() {
   local name="$1"
@@ -103,7 +112,7 @@ install_zsh_plugin "zsh-syntax-highlighting" "https://github.com/zsh-users/zsh-s
 install_zsh_plugin "zsh-autosuggestions"     "https://github.com/zsh-users/zsh-autosuggestions.git"
 
 # ──────────────────────────────
-# 6. Install TPM (tmux plugin manager)
+# 7. Install TPM (tmux plugin manager)
 # ──────────────────────────────
 TPM_DIR="$HOME/.tmux/plugins/tpm"
 if [ ! -d "$TPM_DIR" ]; then
@@ -115,7 +124,7 @@ else
 fi
 
 # ──────────────────────────────
-# 7. Migrate existing .zshrc → .zshrc.local
+# 8. Migrate existing .zshrc → .zshrc.local
 # ──────────────────────────────
 OLD_ZSH="$HOME/.zshrc"
 DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
@@ -158,7 +167,7 @@ else:
 "
 fi
 # ──────────────────────────────
-# 8. Symlink config files
+# 9. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -191,7 +200,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 9. Done — summary
+# 10. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
