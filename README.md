@@ -9,6 +9,7 @@ Personal dotfiles for macOS and Linux (WSL/Ubuntu). Consistent development envir
 | **Shell** | `.zshrc`, `.zshenv`, `.p10k.zsh` | Zsh + oh-my-zsh + Powerlevel10k |
 | **Editor** | `.config/nvim/` | Neovim with LazyVim |
 | **Terminal** | `.config/tmux/tmux.conf` | Tmux with Ctrl+A prefix, vim-style navigation, TPM |
+| **Git** | `.gitconfig` | User name & email |
 | **Prompt** | `.p10k.zsh` | Powerlevel10k (configure per-machine with `p10k configure`) |
 
 ## Quick start
@@ -36,6 +37,7 @@ If you prefer to do things step by step:
 git clone git@github.com:afrijaldz/dotfiles.git ~/dotfiles && cd ~/dotfiles
 
 # 2. Symlink configs
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
 ln -sf ~/dotfiles/.zshrc    ~/.zshrc
 ln -sf ~/dotfiles/.zshenv   ~/.zshenv
 ln -sf ~/dotfiles/.p10k.zsh ~/.p10k.zsh
@@ -77,12 +79,13 @@ cd ~/dotfiles && ./bootstrap.sh
 
 ```
 ~/dotfiles/
-├── .zshrc                 # Zsh config (oh-my-zsh + p10k)
-├── .zshenv                # Zsh env (sources .zshrc)
-├── .p10k.zsh              # Powerlevel10k prompt config
+├── .gitconfig              # Git config (name, email)
+├── .zshrc                  # Zsh config (oh-my-zsh + p10k)
+├── .zshenv                 # Zsh env (sources .zshrc)
+├── .p10k.zsh               # Powerlevel10k prompt config
 ├── .config/
-│   ├── tmux/tmux.conf     # Tmux config
-│   └── nvim/              # Neovim config (LazyVim)
-├── bootstrap.sh           # One-command setup script
+│   ├── tmux/tmux.conf      # Tmux config
+│   └── nvim/               # Neovim config (LazyVim)
+├── bootstrap.sh            # One-command setup script
 └── README.md
 ```

@@ -140,6 +140,7 @@ link_file() {
 link_file "$DOTFILES_DIR/.zshrc"       "$HOME/.zshrc"
 link_file "$DOTFILES_DIR/.zshenv"      "$HOME/.zshenv"
 link_file "$DOTFILES_DIR/.p10k.zsh"    "$HOME/.p10k.zsh"
+link_file "$DOTFILES_DIR/.gitconfig"   "$HOME/.gitconfig"
 
 # Files in ~/.config/
 mkdir -p "$HOME/.config"
