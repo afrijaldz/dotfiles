@@ -4,10 +4,12 @@
 # Shared config for all machines.
 # Machine-specific overrides go in ~/.zshrc.local (not tracked in git).
 
-# Enable Powerlevel10k instant prompt
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+# Enable Powerlevel10k instant prompt (MUST BE FIRST)
+[[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]] &&
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+
+# p10k prompt config (MUST BE BEFORE any output-producing commands)
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Path to oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
@@ -34,9 +36,6 @@ alias v='nvim'
 
 # Machine-specific config (NVM, Bun, Solana, PHP, etc.)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-# p10k prompt config
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Hermes agent env (WSL)
 [[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
