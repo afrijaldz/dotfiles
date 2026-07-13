@@ -157,7 +157,42 @@ else
 fi
 
 # ──────────────────────────────
-# 8. Install tmux clipboard helper
+# 8. Install atuin (sync shell history)
+# ──────────────────────────────
+if ! command -v atuin &>/dev/null; then
+  echo "==> Installing atuin..."
+  case "$PKG_MANAGER" in
+    brew) $PKG_INSTALL atuin ;;
+    *)
+      # Use official installer (works on all Linux distros)
+      bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh) 2>/dev/null || true
+      ;;
+  esac
+fi
+
+if command -v atuin &>/dev/null; then
+  echo "==> atuin installed."
+
+  # Add atuin init to .zshrc.local if not already there
+  LOCAL_ZSH="$HOME/.zshrc.local"
+  if [ -f "$LOCAL_ZSH" ] && ! grep -q "atuin init" "$LOCAL_ZSH" 2>/dev/null; then
+    echo '' >> "$LOCAL_ZSH"
+    echo '# atuin — sync shell history across machines' >> "$LOCAL_ZSH"
+    echo 'eval "$(atuin init zsh)"' >> "$LOCAL_ZSH"
+    echo "    Added atuin init to $LOCAL_ZSH"
+  elif [ ! -f "$LOCAL_ZSH" ]; then
+    echo '# atuin — sync shell history across machines' > "$LOCAL_ZSH"
+    echo 'eval "$(atuin init zsh)"' >> "$LOCAL_ZSH"
+    echo "    Created $LOCAL_ZSH with atuin init"
+  else
+    echo "    atuin already configured in $LOCAL_ZSH"
+  fi
+else
+  echo "==> atuin installation skipped (could not install)"
+fi
+
+# ──────────────────────────────
+# 9. Install tmux clipboard helper
 # ──────────────────────────────
 TMUX_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$TMUX_BIN_DIR"
@@ -193,7 +228,7 @@ chmod +x "$TMUX_BIN_DIR/tmux-yank"
 echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
 
 # ──────────────────────────────
-# 9. Migrate existing .zshrc → .zshrc.local
+# 10. Migrate existing .zshrc → .zshrc.local
 # ──────────────────────────────
 OLD_ZSH="$HOME/.zshrc"
 DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
@@ -237,7 +272,7 @@ else:
 fi
 
 # ──────────────────────────────
-# 10. Symlink config files
+# 11. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -270,7 +305,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 11. Done — summary
+# 12. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
@@ -282,6 +317,15 @@ echo "  1. Restart your shell or run: source ~/.zshrc"
 echo "  2. Log out & back in if default shell was changed"
 echo "  3. Open tmux and press prefix+I to install TPM plugins"
 echo "  4. Run 'p10k configure' if you want to customize the prompt"
+
+if command -v atuin &>/dev/null; then
+  if ! atuin status 2>/dev/null | grep -q "Logged in"; then
+    echo "  5. Setup atuin (sync shell history):"
+    echo "     First machine:  atuin register -u <username> -e <email>"
+    echo "     Other machines: atuin login -u <username>"
+    echo "     Then run:       atuin sync"
+  fi
+fi
 
 if [ "$NERD_FONT_INSTALLED" = false ]; then
   echo ""
