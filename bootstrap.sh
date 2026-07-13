@@ -42,26 +42,25 @@ fi
 # ──────────────────────────────
 # 2. Install Nerd Font
 # ──────────────────────────────
-FONT_NAME="MesloLGS NF"
-FONT_INSTALLED=false
+NERD_FONT_INSTALLED=false
 
-case "$PLATFORM" in
-  macos)
-    if fc-list | grep -iq "MesloLGS"; then
-      FONT_INSTALLED=true
-    else
-      echo "==> Installing MesloLGS Nerd Font..."
+# Check if any Nerd Font is already installed
+for pattern in "MesloLGS" "JetBrainsMono" "FiraCode" "Fira Code" "Hack" "Nerd Font" "NerdFont"; do
+  if fc-list 2>/dev/null | grep -iq "$pattern"; then
+    NERD_FONT_INSTALLED=true
+    break
+  fi
+done
+
+if [ "$NERD_FONT_INSTALLED" = false ]; then
+  case "$PLATFORM" in
+    macos)
+      echo "==> Installing MesloLGS Nerd Font (recommended for p10k)..."
       brew tap --quiet homebrew/cask-fonts 2>/dev/null || true
-      brew install --quiet --cask font-meslo-lg-nerd-font 2>/dev/null && FONT_INSTALLED=true || true
-    fi
-    ;;
-  linux)
-    # Check if MesloLGS is available on the system
-    if fc-list 2>/dev/null | grep -iq "MesloLGS"; then
-      FONT_INSTALLED=true
-    fi
-    ;;
-esac
+      brew install --quiet --cask font-meslo-lg-nerd-font 2>/dev/null && NERD_FONT_INSTALLED=true || true
+      ;;
+  esac
+fi
 
 # ──────────────────────────────
 # 3. Install oh-my-zsh
@@ -161,9 +160,9 @@ echo "  2. Log out & back in (or restart WSL) if default shell was changed"
 echo "  3. Open tmux and press prefix+I to install TPM plugins"
 echo "  4. Run 'p10k configure' if you want to customize the prompt"
 
-if [ "$FONT_INSTALLED" = false ]; then
+if [ "$NERD_FONT_INSTALLED" = false ]; then
   echo ""
-  echo "==> Font: $FONT_NAME not detected."
+  echo "==> No Nerd Font detected. Powerlevel10k needs one for icons."
   case "$PLATFORM" in
     macos)
       echo "    Install manually: brew install --cask font-meslo-lg-nerd-font" ;;
