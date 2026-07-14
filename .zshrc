@@ -34,8 +34,23 @@ export EDITOR='nvim'
 alias td='tmux detach'
 alias v='nvim'
 
+# nnn — quit to last directory
+export NNN_TMPFILE="${XDG_CONFIG_HOME:-$HOME/.config}/nnn/.lastd"
+n() {
+    nnn -e "$@"
+    if [ -f "$NNN_TMPFILE" ]; then
+        . "$NNN_TMPFILE"
+        rm "$NNN_TMPFILE"
+    fi
+}
+
 # Machine-specific config (NVM, Bun, Solana, PHP, etc.)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # Hermes agent env (WSL)
 [[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
+
