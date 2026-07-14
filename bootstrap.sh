@@ -204,7 +204,21 @@ else
 fi
 
 # ──────────────────────────────
-# 9. Install tmux clipboard helper
+# 9. Install nnn (file manager)
+# ──────────────────────────────
+if ! command -v nnn &>/dev/null; then
+  echo "==> Installing nnn..."
+  case "$PKG_MANAGER" in
+    brew) $PKG_INSTALL nnn ;;
+    apt)  $PKG_UPDATE && $PKG_INSTALL nnn ;;
+    *)    $PKG_INSTALL nnn ;;
+  esac
+else
+  echo "==> nnn already installed"
+fi
+
+# ──────────────────────────────
+# 10. Install tmux clipboard helper
 # ──────────────────────────────
 TMUX_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$TMUX_BIN_DIR"
@@ -240,7 +254,7 @@ chmod +x "$TMUX_BIN_DIR/tmux-yank"
 echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
 
 # ──────────────────────────────
-# 10. Migrate existing .zshrc → .zshrc.local
+# 11. Migrate existing .zshrc → .zshrc.local
 # ──────────────────────────────
 OLD_ZSH="$HOME/.zshrc"
 DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
@@ -284,7 +298,7 @@ else:
 fi
 
 # ──────────────────────────────
-# 11. Symlink config files
+# 12. Symlink config files
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
@@ -317,7 +331,7 @@ link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
 # ──────────────────────────────
-# 12. Done — summary
+# 13. Done — summary
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
