@@ -44,6 +44,11 @@ n() {
     fi
 }
 
+# nnn configuration
+export NNN_OPTS="eH"
+export NNN_BMS="m:$HOME/meridian;t:$HOME/trading-meteora;d:$HOME/dotfiles;D:$HOME/Downloads"
+export NNN_COLORS="1234"
+
 # Machine-specific config (NVM, Bun, Solana, PHP, etc.)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
