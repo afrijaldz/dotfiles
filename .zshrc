@@ -49,6 +49,10 @@ export NNN_OPTS="eH"
 export NNN_BMS="m:$HOME/meridian;t:$HOME/trading-meteora;d:$HOME/dotfiles;D:$HOME/Downloads"
 export NNN_COLORS="1234"
 
+# Bitwarden SSH agent — override gnome-keyring agent only when the
+# Bitwarden desktop socket exists (safe on machines without it running)
+[[ -S "$HOME/.bitwarden-ssh-agent.sock" ]] && export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
+
 # Machine-specific config (NVM, Bun, Solana, PHP, etc.)
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
@@ -57,5 +61,4 @@ export NNN_COLORS="1234"
 
 . "$HOME/.atuin/bin/env"
 
-eval "$(atuin init zsh)"
 
