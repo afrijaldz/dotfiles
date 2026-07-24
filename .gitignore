@@ -1,0 +1,3 @@
+# TPM plugin clones — di-install per-mesin lewat `prefix + I` (lihat bootstrap.sh),
+# bukan di-commit. Tiap plugin punya .git sendiri, kalau ter-track jadi embedded repo.
+.config/tmux/plugins/
