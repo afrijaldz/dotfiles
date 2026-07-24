@@ -59,6 +59,8 @@ export NNN_COLORS="1234"
 # Hermes agent env (WSL)
 [[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
 
-. "$HOME/.atuin/bin/env"
+# atuin env — guard so a machine without atuin installed doesn't error on every
+# shell start (atuin's shell init itself lives in ~/.zshrc.local)
+[[ -f "$HOME/.atuin/bin/env" ]] && source "$HOME/.atuin/bin/env"
 
 
