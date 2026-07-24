@@ -77,8 +77,13 @@ fi
 # Set zsh as default shell if not already
 if [ "$SHELL" != "$(command -v zsh)" ]; then
   echo "==> Changing default shell to zsh..."
-  chsh -s "$(command -v zsh)"
-  echo "    You'll need to log out and back in (or restart your session)."
+  # Don't let a failed chsh (managed/LDAP account, no password) abort the run —
+  # the symlinking below matters more than the shell change.
+  if chsh -s "$(command -v zsh)"; then
+    echo "    You'll need to log out and back in (or restart your session)."
+  else
+    echo "    Warning: chsh failed. Change your login shell manually later."
+  fi
 fi
 
 # ──────────────────────────────
@@ -204,18 +209,28 @@ else
 fi
 
 # ──────────────────────────────
-# 9. Install nnn (file manager)
+# 9. Install CLI tools (tmux, neovim, nnn)
 # ──────────────────────────────
-if ! command -v nnn &>/dev/null; then
-  echo "==> Installing nnn..."
+# $1 = command to probe, $2 = package name (defaults to $1)
+install_pkg() {
+  local cmd="$1"
+  local pkg="${2:-$1}"
+  if command -v "$cmd" &>/dev/null; then
+    echo "==> $pkg already installed"
+    return
+  fi
+  echo "==> Installing $pkg..."
   case "$PKG_MANAGER" in
-    brew) $PKG_INSTALL nnn ;;
-    apt)  $PKG_UPDATE && $PKG_INSTALL nnn ;;
-    *)    $PKG_INSTALL nnn ;;
+    brew) $PKG_INSTALL "$pkg" ;;
+    apt)  $PKG_UPDATE && $PKG_INSTALL "$pkg" ;;
+    "")   echo "    skipped — no package manager detected, install $pkg manually" ;;
+    *)    $PKG_INSTALL "$pkg" ;;
   esac
-else
-  echo "==> nnn already installed"
-fi
+}
+
+install_pkg tmux
+install_pkg nvim neovim
+install_pkg nnn
 
 # ──────────────────────────────
 # 10. Install tmux clipboard helper
@@ -230,7 +245,6 @@ cat > "$TMUX_BIN_DIR/tmux-yank" << 'EOF'
 
 if command -v pbcopy &>/dev/null; then
   # macOS
-  cat > /dev/null
   pbcopy
 elif command -v clip.exe &>/dev/null; then
   # WSL
@@ -302,26 +316,28 @@ fi
 # ──────────────────────────────
 echo "==> Symlinking config files..."
 
-# Backup existing dotfiles
+# Backup existing dotfiles — directory is created lazily, only if something
+# actually needs backing up, so repeat runs don't litter $HOME with empty dirs.
 BACKUP_DIR="$HOME/dotfiles-backup-$(date +%Y%m%d-%H%M%S)"
-mkdir -p "$BACKUP_DIR"
 
 link_file() {
   local src="$1"
   local dst="$2"
   if [ -e "$dst" ] || [ -L "$dst" ]; then
     if [ ! -L "$dst" ] || [ "$(readlink "$dst")" != "$src" ]; then
+      mkdir -p "$BACKUP_DIR"
       mv "$dst" "$BACKUP_DIR/" 2>/dev/null || true
       echo "    backed up: $dst"
     fi
   fi
-  ln -sf "$src" "$dst"
+  # -n is essential: without it, when $dst is already a symlink to a directory,
+  # ln follows it and creates $src/$(basename $src) inside the repo instead.
+  ln -sfn "$src" "$dst"
   echo "    linked: $dst -> $src"
 }
 
 # Files in home directory
 link_file "$DOTFILES_DIR/.zshrc"       "$HOME/.zshrc"
-link_file "$DOTFILES_DIR/.zshenv"      "$HOME/.zshenv"
 link_file "$DOTFILES_DIR/.p10k.zsh"    "$HOME/.p10k.zsh"
 link_file "$DOTFILES_DIR/.gitconfig"   "$HOME/.gitconfig"
 
@@ -335,7 +351,9 @@ link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 # ──────────────────────────────
 echo ""
 echo "==> Bootstrap complete!"
-echo "    Backup of old dotfiles: $BACKUP_DIR"
+if [ -d "$BACKUP_DIR" ]; then
+  echo "    Backup of old dotfiles: $BACKUP_DIR"
+fi
 echo ""
 
 echo "Next steps:"
