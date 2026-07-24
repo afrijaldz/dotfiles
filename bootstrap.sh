@@ -339,7 +339,8 @@ link_file() {
 # Files in home directory
 link_file "$DOTFILES_DIR/.zshrc"       "$HOME/.zshrc"
 link_file "$DOTFILES_DIR/.p10k.zsh"    "$HOME/.p10k.zsh"
-link_file "$DOTFILES_DIR/.gitconfig"   "$HOME/.gitconfig"
+# ~/.gitconfig is intentionally NOT linked — it stays machine-local, since it's
+# where `gh auth login` writes and it holds host-specific absolute paths.
 
 # Files in ~/.config/
 mkdir -p "$HOME/.config"

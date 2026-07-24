@@ -6,11 +6,12 @@ Personal dotfiles for macOS and Linux. Consistent development environment across
 
 | Component | Config | Notes |
 |-----------|--------|-------|
-| **Shell** | `.zshrc`, `.zshenv`, `.p10k.zsh` | Zsh + oh-my-zsh + Powerlevel10k |
+| **Shell** | `.zshrc`, `.p10k.zsh` | Zsh + oh-my-zsh + Powerlevel10k |
 | **Editor** | `.config/nvim/` | Neovim with LazyVim |
 | **Terminal** | `.config/tmux/tmux.conf` | Tmux with Ctrl+A prefix, vim-style navigation, TPM |
-| **Git** | `.gitconfig` | User name & email |
 | **Prompt** | `.p10k.zsh` | Powerlevel10k (configure per-machine with `p10k configure`) |
+
+Git config is **not** included — see [Machine-specific config](#machine-specific-config).
 
 ## Quick start
 
@@ -38,13 +39,11 @@ If you prefer to do things step by step:
 # 1. Clone
 git clone git@github.com:afrijaldz/dotfiles.git ~/dotfiles && cd ~/dotfiles
 
-# 2. Symlink configs
-ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
-ln -sf ~/dotfiles/.zshrc    ~/.zshrc
-ln -sf ~/dotfiles/.zshenv   ~/.zshenv
-ln -sf ~/dotfiles/.p10k.zsh ~/.p10k.zsh
-ln -sf ~/dotfiles/.config/tmux ~/.config/tmux
-ln -sf ~/dotfiles/.config/nvim ~/.config/nvim
+# 2. Symlink configs (-n so re-running can't nest links inside the repo)
+ln -sfn ~/dotfiles/.zshrc    ~/.zshrc
+ln -sfn ~/dotfiles/.p10k.zsh ~/.p10k.zsh
+ln -sfn ~/dotfiles/.config/tmux ~/.config/tmux
+ln -sfn ~/dotfiles/.config/nvim ~/.config/nvim
 
 # 3. Install oh-my-zsh (if not installed)
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -58,6 +57,16 @@ git clone --depth=1 https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 Place local overrides in `~/.zshrc.local` (not tracked in git).
 It is automatically sourced by the shared `.zshrc`.
 
+`~/.gitconfig` is machine-local too and is neither tracked nor symlinked. It is
+the file `gh auth login` writes to, and it carries host-specific absolute paths
+(`/usr/bin/gh` on Linux vs `/opt/homebrew/bin/gh` on macOS). Set your identity
+per machine:
+
+```bash
+git config --global user.name  "Your Name"
+git config --global user.email "you@example.com"
+```
+
 ## Post-install
 
 1. **Restart your shell** or run `source ~/.zshrc`
@@ -69,9 +78,7 @@ It is automatically sourced by the shared `.zshrc`.
 
 ```
 ~/dotfiles/
-├── .gitconfig              # Git config (name, email)
 ├── .zshrc                  # Zsh config (oh-my-zsh + p10k)
-├── .zshenv                 # Zsh env (sources .zshrc)
 ├── .p10k.zsh               # Powerlevel10k prompt config
 ├── .config/
 │   ├── tmux/tmux.conf      # Tmux config
