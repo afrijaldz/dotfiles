@@ -270,44 +270,61 @@ echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
 # ──────────────────────────────
 # 11. Migrate existing .zshrc → .zshrc.local
 # ──────────────────────────────
+# On a machine with its own pre-existing ~/.zshrc, pull every line that isn't
+# already in the shared .zshrc into ~/.zshrc.local, so machine-specific config
+# survives the symlink swap below instead of only being backed up.
+#
+# Runs whenever ~/.zshrc is a real file (not our symlink) — crucially NOT gated
+# on .zshrc.local being absent, because the atuin step above may have already
+# created it. Extracted lines are APPENDED and de-duplicated, never overwriting
+# what's already there.
 OLD_ZSH="$HOME/.zshrc"
 DOTFILES_ZSH="$DOTFILES_DIR/.zshrc"
 LOCAL_ZSH="$HOME/.zshrc.local"
 
-if [ -f "$OLD_ZSH" ] && [ ! -L "$OLD_ZSH" ] && [ ! -f "$LOCAL_ZSH" ]; then
+if [ -f "$OLD_ZSH" ] && [ ! -L "$OLD_ZSH" ]; then
   echo "==> Migrating machine-specific config from old .zshrc to .zshrc.local..."
 
   python3 -c "
-with open('$OLD_ZSH') as f:
-    old_lines = [l.rstrip() for l in f.readlines()]
+import os
 
-with open('$DOTFILES_ZSH') as f:
-    new_lines = [l.rstrip() for l in f.readlines()]
+old_lines = [l.rstrip() for l in open('$OLD_ZSH')]
+shared = set(l.rstrip() for l in open('$DOTFILES_ZSH'))
 
-new_set = set(new_lines)
-local_lines = []
+local_path = '$LOCAL_ZSH'
+existing = [l.rstrip() for l in open(local_path)] if os.path.exists(local_path) else []
+existing_set = set(existing)
+
+migrated = []
 prev_blank = False
-
 for line in old_lines:
-    if line in new_set:
+    # Skip lines the shared .zshrc already provides, or that .zshrc.local has.
+    if line in shared or (line.strip() and line in existing_set):
         prev_blank = False
         continue
-    # Collapse consecutive blank lines
     if line == '':
         if prev_blank:
             continue
         prev_blank = True
     else:
         prev_blank = False
-    local_lines.append(line)
+    migrated.append(line)
 
-result = '\n'.join(local_lines).strip()
-if result:
-    with open('$LOCAL_ZSH', 'w') as f:
-        f.write(result + '\n')
-    print('    wrote: $LOCAL_ZSH')
+# Trim leading/trailing blank lines from the migrated block.
+while migrated and migrated[0] == '':
+    migrated.pop(0)
+while migrated and migrated[-1] == '':
+    migrated.pop()
+
+if migrated:
+    with open(local_path, 'a') as f:
+        if existing and existing[-1].strip() != '':
+            f.write('\n')
+        f.write('# --- migrated from a previous ~/.zshrc ---\n')
+        f.write('\n'.join(migrated) + '\n')
+    print('    migrated %d line(s) into %s' % (len(migrated), local_path))
 else:
-    print('    nothing to migrate (config was identical)')
+    print('    nothing to migrate (already covered by shared .zshrc / .zshrc.local)')
 "
 fi
 
