@@ -59,8 +59,10 @@ export NNN_COLORS="1234"
 # Hermes agent env (WSL)
 [[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
 
-# atuin env — guard so a machine without atuin installed doesn't error on every
-# shell start (atuin's shell init itself lives in ~/.zshrc.local)
+# atuin — put the binary on PATH, THEN load the shell integration (Ctrl-R /
+# history search). Both guarded so a machine without atuin doesn't error. The
+# init must come after the PATH line, or `atuin` isn't found yet.
 [[ -f "$HOME/.atuin/bin/env" ]] && source "$HOME/.atuin/bin/env"
+command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 
 

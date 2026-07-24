@@ -178,20 +178,9 @@ fi
 if command -v atuin &>/dev/null; then
   echo "==> atuin installed."
 
-  # Add atuin init to .zshrc.local if not already there
-  LOCAL_ZSH="$HOME/.zshrc.local"
-  if [ -f "$LOCAL_ZSH" ] && ! grep -q "atuin init" "$LOCAL_ZSH" 2>/dev/null; then
-    echo '' >> "$LOCAL_ZSH"
-    echo '# atuin — sync shell history across machines' >> "$LOCAL_ZSH"
-    echo 'eval "$(atuin init zsh)"' >> "$LOCAL_ZSH"
-    echo "    Added atuin init to $LOCAL_ZSH"
-  elif [ ! -f "$LOCAL_ZSH" ]; then
-    echo '# atuin — sync shell history across machines' > "$LOCAL_ZSH"
-    echo 'eval "$(atuin init zsh)"' >> "$LOCAL_ZSH"
-    echo "    Created $LOCAL_ZSH with atuin init"
-  else
-    echo "    atuin already configured in $LOCAL_ZSH"
-  fi
+  # Shell integration (eval "$(atuin init zsh)") lives in the shared .zshrc,
+  # guarded on the binary being present — so nothing to add here. Adding it to
+  # .zshrc.local too would run atuin init twice.
 
   # Import existing history if atuin db is empty
   if [ ! -f "$HOME/.local/share/atuin/history.db" ]; then
