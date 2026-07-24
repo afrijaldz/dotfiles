@@ -1,0 +1,11 @@
+{
+  "LazyVim": { "branch": "main", "commit": "459a4c3b1059671e766a46c7cc223827dc67e3d0" },
+  "conform.nvim": { "branch": "master", "commit": "02fd64fb3d4b18ec029c0e0683c3dc3ec6d2c5b8" },
+  "gitsigns.nvim": { "branch": "main", "commit": "5f808b5e4fef30bd8aca1b803b4e555da07fc412" },
+  "lazy.nvim": { "branch": "main", "commit": "3388a26417c48b15d5266d954f62a4d47fe99490" },
+  "mason.nvim": { "branch": "main", "commit": "e2f7f9044ec30067bc11800a9e266664b88cda22" },
+  "nvim-lspconfig": { "branch": "master", "commit": "2c007c79eedfca0ec652c50d571cb0c52d1577ba" },
+  "nvim-treesitter": { "branch": "main", "commit": "acada1a685f5decd0f10e1672963bf3425eafa45" },
+  "plenary.nvim": { "branch": "master", "commit": "2d9b06177a975543726ce5c73fca176cedbffe9d" },
+  "which-key.nvim": { "branch": "main", "commit": "9b365a6428a9633e3eeb34dbef1b791511c54f70" }
+}
