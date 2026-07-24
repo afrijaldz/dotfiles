@@ -5,9 +5,9 @@
 [user]
 	name = Afrijal Dzuhri
 	email = hi@afrijal.dev
-[credential "https://github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
-[credential "https://gist.github.com"]
-	helper = 
-	helper = !/usr/bin/gh auth git-credential
+
+# Machine-specific overrides go in ~/.gitconfig.local (not tracked in git),
+# mirroring the ~/.zshrc.local pattern. Silently skipped if absent.
+# Keep this last so local settings win.
+[include]
+	path = ~/.gitconfig.local
