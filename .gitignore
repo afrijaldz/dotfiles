@@ -5,3 +5,7 @@
 # ~/.gitconfig is machine-local: `gh auth login` writes to it and it holds
 # host-specific absolute paths. Listed here so it can't be re-added by accident.
 .gitconfig
+
+# Local scratch copy of the zshrc.local template — kept on the machine but not
+# tracked; nothing in the repo references it.
+zshrc.local.template
