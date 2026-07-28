@@ -65,10 +65,10 @@ export NNN_COLORS="1234"
 [[ -f "$HOME/.atuin/bin/env" ]] && source "$HOME/.atuin/bin/env"
 command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 
-# p10k renders its prompt under `emulate -L zsh -o no_aliases`. When gitstatus
-# fails to initialize, that restore path is skipped and `no_aliases` leaks into
-# the global shell — silently killing every alias (v, td, …). Force it back on
-# as the very last thing so aliases always work regardless of p10k's state.
+# Safety net: p10k's config (~/.p10k.zsh) does `setopt no_aliases` while it
+# loads and restores it at the end. A truncated/regenerated config can drop
+# that restore, leaking `no_aliases` globally and silently killing every alias
+# (v, td, …). Force `aliases` back on as the last line so they always work.
 setopt aliases
 
 
