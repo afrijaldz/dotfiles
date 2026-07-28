@@ -217,8 +217,31 @@ install_pkg() {
   esac
 }
 
+# Neovim: apt tops out at 0.9.5, but LazyVim needs 0.11.2+.
+# On apt systems, pull the official tarball into /opt; elsewhere the
+# distro package (dnf/pacman/brew) is recent enough.
+install_neovim() {
+  if command -v nvim &>/dev/null; then
+    echo "==> neovim already installed ($(nvim --version | head -1))"
+    return
+  fi
+  if [ "$PKG_MANAGER" = "apt" ]; then
+    echo "==> Installing neovim from official tarball..."
+    local tmp; tmp="$(mktemp -d)"
+    curl -Lo "$tmp/nvim.tar.gz" \
+      https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+    sudo rm -rf /opt/nvim
+    sudo tar -C /opt -xzf "$tmp/nvim.tar.gz"
+    sudo mv /opt/nvim-linux-x86_64 /opt/nvim
+    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    rm -rf "$tmp"
+  else
+    install_pkg nvim neovim
+  fi
+}
+
 install_pkg tmux
-install_pkg nvim neovim
+install_neovim
 install_pkg nnn
 
 # ──────────────────────────────
