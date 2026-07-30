@@ -31,9 +31,9 @@ source $ZSH/oh-my-zsh.sh
 export EDITOR='nvim'
 
 # Aliases
-# `tmux` polos selalu bikin session BARU yang kosong — session lama yang
-# di-restore continuum tetap ada tapi ga keliatan, jadi berasa "hilang".
-# `t` selalu attach dulu ke yang sudah ada.
+# Plain `tmux` always creates a NEW empty session — the old session that
+# continuum restored still exists but stays hidden, so it feels "lost".
+# `t` always attaches to an existing session first.
 alias t='tmux attach 2>/dev/null || tmux new -s main'
 alias td='tmux detach'
 alias v='nvim'

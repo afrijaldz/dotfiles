@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# Wrapper aman untuk tmux-resurrect save.sh.
+# Safe wrapper around tmux-resurrect's save.sh.
 #
-# Kenapa perlu: save.sh yang dijalankan saat server tmux SUDAH mati tetap bikin
-# file save baru — tapi isinya 0 byte — lalu meng-update symlink `last` ke situ.
-# Restore berikutnya jadi mengembalikan "tidak ada apa-apa", alias semua session
-# hilang. Ini gampang kejadian di ExecStop unit systemd waktu shutdown, karena
-# server bisa saja sudah keburu dibunuh sebelum ExecStop sempat jalan.
+# Why it's needed: save.sh run when the tmux server is ALREADY dead still creates
+# a new save file — but it's 0 bytes — and then updates the `last` symlink to it.
+# The next restore then brings back "nothing", i.e. all sessions are lost. This
+# happens easily in the systemd unit's ExecStop during shutdown, because the
+# server may already have been killed before ExecStop gets to run.
 #
-# Guard di sini: kalau ga ada server/session hidup, jangan save sama sekali —
-# biarkan save valid yang terakhir tetap jadi `last`.
+# Guard here: if there's no live server/session, don't save at all —
+# leave the last valid save as `last`.
 
 set -u
 
@@ -20,8 +20,8 @@ tmux has-session >/dev/null 2>&1 || exit 0
 
 "$SAVE_SCRIPT" quiet
 
-# Sabuk pengaman kedua: kalau save barusan ternyata tetap kosong, buang dan
-# balikkan `last` ke file save valid terakhir.
+# Second safety belt: if the save we just made turns out to be empty anyway, drop it
+# and point `last` back to the most recent valid save file.
 last_file="$(readlink -f "${RESURRECT_DIR}/last" 2>/dev/null || true)"
 if [ -n "$last_file" ] && [ -f "$last_file" ] && [ ! -s "$last_file" ]; then
 	rm -f "$last_file"

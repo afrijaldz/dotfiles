@@ -74,17 +74,17 @@ git config --global user.email "you@example.com"
 3. **Customize prompt**: Run `p10k configure` if you want to tweak Powerlevel10k
 4. **Neovim**: LazyVim auto-installs plugins on first launch
 
-### Session tmux yang bertahan setelah reboot
+### tmux sessions that survive a reboot
 
-`bootstrap.sh` memasang dan meng-enable `~/.config/systemd/user/tmux.service`.
-Unit ini menyalakan tmux server saat login (supaya tmux-continuum sempat restore
-session sebelum kamu buka terminal) dan menyimpan state sekali lagi saat
-shutdown. Pakai alias `t` untuk masuk — `tmux` polos selalu bikin session baru
-yang kosong, sehingga session hasil restore terlihat seperti "hilang".
+`bootstrap.sh` installs and enables `~/.config/systemd/user/tmux.service`.
+This unit starts the tmux server at login (so tmux-continuum can restore
+sessions before you open a terminal) and saves state once more at
+shutdown. Use the `t` alias to get in — plain `tmux` always creates a new
+empty session, which makes the restored session look "lost".
 
 ```bash
-systemctl --user status tmux.service    # cek unit
-tmux ls                                 # lihat semua session, termasuk hasil restore
+systemctl --user status tmux.service    # check the unit
+tmux ls                                 # list all sessions, including restored ones
 ```
 
 ## Structure
@@ -95,8 +95,8 @@ tmux ls                                 # lihat semua session, termasuk hasil re
 ├── .p10k.zsh               # Powerlevel10k prompt config
 ├── .config/
 │   ├── tmux/tmux.conf      # Tmux config
-│   ├── tmux/scripts/       # Helper tmux (guard save resurrect)
-│   ├── systemd/user/       # tmux.service — auto-start server saat login
+│   ├── tmux/scripts/       # tmux helpers (resurrect save guard)
+│   ├── systemd/user/       # tmux.service — auto-start server at login
 │   └── nvim/               # Neovim config (LazyVim)
 ├── bootstrap.sh            # One-command setup script
 ├── KEYMAPS.md              # Tmux & Neovim keybindings

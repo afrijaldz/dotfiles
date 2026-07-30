@@ -376,11 +376,11 @@ mkdir -p "$HOME/.config"
 link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 
-# tmux server unit — start server saat login supaya tmux-continuum bisa restore
-# session sebelum kita buka terminal, dan save sekali lagi saat shutdown.
-# Kita simpan unit-nya sendiri (bukan yang di-generate tmux-continuum) karena
-# ExecStop-nya harus lewat resurrect-save-guard.sh; continuum cuma nulis unit
-# kalau file-nya belum ada, jadi symlink ini menang.
+# tmux server unit — start the server at login so tmux-continuum can restore
+# sessions before we open a terminal, and save once more at shutdown.
+# We keep our own unit (not the one tmux-continuum generates) because its
+# ExecStop has to go through resurrect-save-guard.sh; continuum only writes the
+# unit if the file doesn't exist yet, so this symlink wins.
 if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
   mkdir -p "$HOME/.config/systemd/user"
   link_file "$DOTFILES_DIR/.config/systemd/user/tmux.service" \

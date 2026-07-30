@@ -1,5 +1,5 @@
-# TPM plugin clones — di-install per-mesin lewat `prefix + I` (lihat bootstrap.sh),
-# bukan di-commit. Tiap plugin punya .git sendiri, kalau ter-track jadi embedded repo.
+# TPM plugin clones — installed per-machine via `prefix + I` (see bootstrap.sh),
+# not committed. Each plugin has its own .git, which would become an embedded repo if tracked.
 .config/tmux/plugins/
 
 # ~/.gitconfig is machine-local: `gh auth login` writes to it and it holds
