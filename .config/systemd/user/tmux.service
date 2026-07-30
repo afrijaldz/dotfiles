@@ -1,0 +1,22 @@
+[Unit]
+Description=tmux server (detached, session di-restore oleh tmux-continuum)
+Documentation=man:tmux(1)
+
+[Service]
+Type=forking
+Environment=DISPLAY=:0
+# `start-server` doang — tmux.conf nge-set `exit-empty off` supaya server ga
+# langsung mati sebelum tmux-continuum sempat restore session.
+ExecStart=/usr/bin/tmux start-server
+
+# Lewat guard, BUKAN save.sh langsung: save.sh yang jalan pas server sudah mati
+# nulis save 0 byte lalu meng-update symlink `last` ke situ, dan boot berikutnya
+# restore-nya jadi kosong.
+ExecStop=%h/.config/tmux/scripts/resurrect-save-guard.sh
+ExecStop=/usr/bin/tmux kill-server
+KillMode=control-group
+
+RestartSec=2
+
+[Install]
+WantedBy=default.target
