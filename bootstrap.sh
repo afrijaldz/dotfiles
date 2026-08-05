@@ -375,6 +375,9 @@ link_file "$DOTFILES_DIR/.p10k.zsh"    "$HOME/.p10k.zsh"
 mkdir -p "$HOME/.config"
 link_file "$DOTFILES_DIR/.config/tmux" "$HOME/.config/tmux"
 link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
+# Light/dark theme files that .zshrc sources at startup. Without this link the
+# shell silently falls back to the plugin defaults, which are dark-only.
+link_file "$DOTFILES_DIR/.config/zsh"  "$HOME/.config/zsh"
 
 # tmux server unit — start the server at login so tmux-continuum can restore
 # sessions before we open a terminal, and save once more at shutdown.

@@ -11,6 +11,25 @@
 # p10k prompt config (MUST BE BEFORE any output-producing commands)
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# ------------------------------
+# Theme mode (light / dark)
+# ------------------------------
+# A theme has to be applied in two phases, because its two halves become
+# settable at different moments:
+#   - powerlevel10k reads POWERLEVEL9K_* when oh-my-zsh loads the theme, so
+#     prompt colors must be set BEFORE that.
+#   - ZSH_HIGHLIGHT_STYLES only exists once oh-my-zsh has loaded
+#     zsh-syntax-highlighting, so those must be set AFTER it.
+# Each theme file defines one function per phase; they're called in place below.
+# Switch with `theme light|dark|toggle` (defined further down).
+ZSH_THEME_MODE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/zsh-theme-mode"
+ZSH_THEME_MODE=light
+[[ -r $ZSH_THEME_MODE_FILE ]] && ZSH_THEME_MODE="$(<$ZSH_THEME_MODE_FILE)"
+[[ $ZSH_THEME_MODE == (light|dark) ]] || ZSH_THEME_MODE=light
+[[ -r ~/.config/zsh/themes/${ZSH_THEME_MODE}.zsh ]] &&
+  source ~/.config/zsh/themes/${ZSH_THEME_MODE}.zsh
+(( $+functions[zsh_theme_prompt] )) && zsh_theme_prompt   # phase 1: before oh-my-zsh
+
 # Path to oh-my-zsh
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -26,6 +45,24 @@ plugins=(
 )
 
 source $ZSH/oh-my-zsh.sh
+
+(( $+functions[zsh_theme_syntax] )) && zsh_theme_syntax   # phase 2: after oh-my-zsh
+
+# Switch the shell theme. Re-execs rather than re-applying in place: p10k reads
+# its colors when the theme loads, and zsh-syntax-highlighting caches its styles,
+# so a fresh shell is the only way both halves land. `exec` keeps the same
+# terminal and the same shell level.
+theme() {
+  local mode="${1:-toggle}"
+  [[ $mode == toggle ]] && { [[ $ZSH_THEME_MODE == light ]] && mode=dark || mode=light; }
+  if [[ $mode != (light|dark) ]]; then
+    print -u2 "theme: expected light, dark or toggle — got '$mode'"
+    return 1
+  fi
+  mkdir -p "${ZSH_THEME_MODE_FILE:h}"
+  print -r -- "$mode" > "$ZSH_THEME_MODE_FILE"
+  exec zsh
+}
 
 # Editor
 export EDITOR='nvim'
