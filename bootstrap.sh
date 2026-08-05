@@ -379,6 +379,63 @@ link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 # shell silently falls back to the plugin defaults, which are dark-only.
 link_file "$DOTFILES_DIR/.config/zsh"  "$HOME/.config/zsh"
 
+# Claude Code hooks (daily work recap into a notes folder). Linking the
+# directory is safe: Claude Code does not create ~/.claude/hooks itself.
+# The hook is inert until ~/.config/daily-recap.json exists — see README.
+#
+# ~/.claude/settings.json can't be symlinked from here — it is machine-local and
+# holds unrelated per-machine state (model, theme, auth-adjacent flags). So the
+# hook is merged into it instead. Note this is NOT tied to a Claude account:
+# switching accounts replaces ~/.claude/.credentials.json, never settings.json,
+# so the recap keeps running. This only matters on a new machine or a reset
+# ~/.claude.
+if [ -d "$HOME/.claude" ] || mkdir -p "$HOME/.claude" 2>/dev/null; then
+  link_file "$DOTFILES_DIR/.claude/hooks" "$HOME/.claude/hooks"
+
+  if command -v python3 >/dev/null 2>&1; then
+    python3 - "$HOME/.claude/settings.json" <<'PY'
+import json, os, sys
+
+path = sys.argv[1]
+cmd = "~/.claude/hooks/daily-recap.py hook 2>/dev/null || true"
+
+data = {}
+if os.path.exists(path):
+    try:
+        with open(path) as f:
+            data = json.load(f)
+    except ValueError:
+        # Never overwrite a file we failed to parse — that would silently drop
+        # every other setting on the machine.
+        print("    settings.json is not valid JSON; add the hook by hand (see README)")
+        raise SystemExit(0)
+
+entries = data.setdefault("hooks", {}).setdefault("SessionStart", [])
+found = False
+for entry in entries:
+    for hook in entry.get("hooks", []):
+        if "daily-recap.py" in hook.get("command", ""):
+            hook["command"] = cmd          # refresh an older spelling in place
+            found = True
+if not found:
+    entries.append({"hooks": [{
+        "type": "command",
+        "command": cmd,
+        "timeout": 20,
+        "statusMessage": "Checking daily recap...",
+    }]})
+
+os.makedirs(os.path.dirname(path), exist_ok=True)
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+print("    daily recap hook: %s" % ("already registered" if found else "registered"))
+PY
+  else
+    echo "    python3 missing — register the recap hook by hand (see README)"
+  fi
+fi
+
 # tmux server unit — start the server at login so tmux-continuum can restore
 # sessions before we open a terminal, and save once more at shutdown.
 # We keep our own unit (not the one tmux-continuum generates) because its

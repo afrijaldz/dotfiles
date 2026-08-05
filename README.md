@@ -128,10 +128,85 @@ to light. Colors are 256-color cube codes rather than ANSI 0–15 on purpose —
 the base 16 are defined by the terminal's own scheme, and light schemes render
 them bright enough that ANSI yellow drops to about 1.1:1 against white.
 
+## Daily recap
+
+`.claude/hooks/daily-recap.py` writes a short summary of each day's work into a
+Markdown notes folder (an Obsidian vault, in practice — but it is just files). A
+`SessionStart` hook runs it whenever Claude Code opens; it prints nothing unless
+a day is due, so most sessions pay nothing for it.
+
+The day boundary is midnight and today is never written up — a day is only
+recapped once it is over, and the catch-up happens the next time Claude Code is
+opened rather than on a timer.
+
+Two sources, both already summarized and cheap to read: git commits authored by
+you across every repo under `$HOME`, and Claude Code session titles. No shell
+history is read and no conversation content is opened.
+
+**Everything personal lives outside this repo.** The script is generic and reads
+`~/.config/daily-recap.json`, which is not tracked here — this repo is public.
+Without that file the hook is inert, so nothing happens on a machine that has
+not opted in.
+
+```json
+{
+  "notes_dir": "~/notes",
+  "default_folder": "Daily",
+  "language": "English",
+  "lookback_days": 7,
+  "routes": [
+    { "name": "work", "path": "~/src/acme", "folder": "Projects/Acme/daily" }
+  ]
+}
+```
+
+Each route sends work done under `path` to `folder` instead of the default one;
+first match wins, and `name` is the bucket you pass to `write`. With no routes,
+everything lands in `default_folder`.
+
+Notes folders often have no version history, so the file handling is
+deliberately conservative and lives in the script rather than being re-derived
+each run:
+
+- notes are only ever appended to, inside one `<!-- daily-recap:... -->` block
+- that block is the only region ever rewritten; anything you wrote by hand is
+  never touched
+- daily filenames tend to exist with both one and two spaces, so an existing
+  note is matched with either before a new one is created
+
+```bash
+.claude/hooks/daily-recap.py pending          # what is due, as JSON
+.claude/hooks/daily-recap.py collect <date>   # raw material for one day
+echo '- ...' | .claude/hooks/daily-recap.py write <date> <bucket>
+```
+
+### Turning it on again
+
+`./bootstrap.sh` does it. It links `~/.claude/hooks` and merges the `SessionStart`
+entry into `~/.claude/settings.json`, leaving every other setting alone. Running
+it twice is a no-op, and it refuses to touch the file if it isn't valid JSON.
+
+**Switching Claude accounts changes nothing here.** The account lives in
+`~/.claude/.credentials.json`; the hook lives in `~/.claude/settings.json`, which
+is machine config. Logging in as someone else replaces the former and never
+touches the latter, so the recap keeps running.
+
+What does need re-enabling is a **new machine**, or a `~/.claude` that got wiped
+— both covered by re-running `bootstrap.sh`. To check whether it is live:
+
+```bash
+jq '.hooks.SessionStart' ~/.claude/settings.json    # should list daily-recap.py
+.claude/hooks/daily-recap.py pending                # what it would write next
+```
+
+Claude Code only re-reads settings at startup, so a freshly registered hook
+takes effect in the next session (or after opening `/hooks` once).
+
 ## Structure
 
 ```
 ~/dotfiles/
+├── .claude/hooks/          # daily-recap.py — daily work summary into Obsidian
 ├── .zshrc                  # Zsh config (oh-my-zsh + p10k), picks the theme mode
 ├── .p10k.zsh               # Powerlevel10k prompt config
 ├── .config/

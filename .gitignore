@@ -9,3 +9,7 @@
 # Local scratch copy of the zshrc.local template — kept on the machine but not
 # tracked; nothing in the repo references it.
 zshrc.local.template
+
+# Python bytecode from the Claude hooks — build artifact, never tracked.
+__pycache__/
+*.pyc
