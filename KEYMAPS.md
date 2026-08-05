@@ -1,53 +1,77 @@
 # Keymaps
 
+Bindings marked **★** are defined in this repo. The rest are upstream defaults,
+listed here only because they are the ones worth remembering — they are not
+exhaustive.
+
 ## Tmux
+
+Prefix is `Ctrl+A`.
 
 | Key | Action |
 |-----|--------|
-| `Ctrl+A` | Prefix |
-| `Prefix + \` | Split pane **horizontal** |
-| `Prefix + -` | Split pane **vertical** |
-| `Prefix + r` | Reload tmux config |
-| `Prefix + m` | Toggle pane zoom |
-| `Ctrl+h/j/k/l` | Navigate panes (vim-aware) |
-| `Prefix + h/j/k/l` | Resize pane (repeatable) |
+| `Ctrl+A` | Prefix ★ |
+| `Prefix + \|` | Split pane **horizontal** ★ |
+| `Prefix + -` | Split pane **vertical** ★ |
+| `Prefix + r` | Reload tmux config ★ |
+| `Prefix + m` | Toggle pane zoom ★ |
+| `Prefix + T` | Toggle dark/light theme ★ |
+| `Prefix + P` | Paste from the Windows clipboard (WSL) ★ |
+| `Prefix + h/j/k/l` | Resize pane (repeatable) ★ |
+| `Ctrl+h/j/k/l` | Navigate panes, no prefix — skips to Vim when a Vim pane is focused ★ |
+| `Ctrl+\` | Toggle last pane, no prefix ★ |
+| `Prefix + q` | Show pane numbers |
+| `Prefix + t` | Clock |
 | `Prefix + I` | Install TPM plugins |
 | `Prefix + U` | Update TPM plugins |
-| **Copy mode** (`Prefix+[`) | |
-| `v` | Start selection |
-| `y` | Yank to clipboard |
+| **Copy mode** (`Prefix + [`) | |
+| `v` | Start selection ★ |
+| `y` | Yank to clipboard ★ |
 
 ## Neovim (LazyVim)
 
 | Key | Mode | Action |
 |-----|------|--------|
 | `Space` | — | Leader key |
-| `jj` | Insert | Exit insert mode |
-| `jj` | Terminal | Exit terminal mode |
+| `jj` | Insert | Exit insert mode ★ |
+| `jj` | Terminal | Exit terminal mode ★ |
+| `<leader>ut` | Normal | Toggle dark/light theme ★ |
 | `<leader>e` | Normal | File explorer |
 | `<leader>ff` | Normal | Find files |
-| `<leader>fg` | Normal | Live grep |
+| `<leader>fg` | Normal | Find files (git-tracked only) |
 | `<leader>fr` | Normal | Recent files |
 | `<leader>fb` | Normal | Buffer list |
-| `<leader>q` | Normal | Quit |
-| `<leader>w` | Normal | Save |
-| `<leader>h` | Normal | Toggle search highlight |
-| `gd` | Normal | Go to definition |
-| `gD` | Normal | Go to declaration |
-| `gr` | Normal | Go to references |
-| `K` | Normal | Hover documentation |
-| `<leader>ca` | Normal | Code action |
-| `<leader>rn` | Normal | Rename symbol |
-| `<leader>gg` | Normal | Git status |
-| `<leader>gj` | Normal | Next hunk |
-| `<leader>gk` | Normal | Prev hunk |
-| `[d` | Normal | Next diagnostic |
-| `]d` | Normal | Prev diagnostic |
-| `<leader>u` | Normal | Toggle Undotree |
-| `<leader>th` | Normal | Toggle highlight |
-| `<leader>tn` | Normal | Toggle line numbers |
-| `<leader>tl` | Normal | Toggle relative numbers |
-| `<leader>ts` | Normal | Toggle spell check |
-| `<leader>tw` | Normal | Toggle wrap |
+| `<leader>sg` | Normal | Live grep |
+| `<leader>sw` | Normal | Grep word under cursor |
+| `<leader>sk` | Normal | Search keymaps |
+| `<leader>su` | Normal | Undo tree |
+| `<leader>gs` | Normal | Git status |
+| `<leader>gd` | Normal | Git diff (hunks) |
+| `<leader>uC` | Normal | Pick a colorscheme |
+| `]d` / `[d` | Normal | Next / previous diagnostic |
+| `gd` / `gr` | Normal | Go to definition / references (once an LSP attaches) |
+| `K` | Normal | Hover documentation (once an LSP attaches) |
 
-For full LazyVim keymaps: `:help lazyvim-keymaps`
+`<leader>sk` lists every active mapping, which beats keeping a longer table here
+in sync. For upstream defaults see `:help lazyvim-keymaps`.
+
+## Shell
+
+The shell has no keybinding for this — it is a command, because switching
+theme re-execs zsh and that is not something to trigger by a stray keypress.
+
+| Command | Action |
+|---------|--------|
+| `theme` | Toggle dark/light theme ★ |
+| `theme light` / `theme dark` | Switch to a specific mode ★ |
+
+## Theme toggles at a glance
+
+Each tool keeps its own mode; they are deliberately not wired together.
+
+| Tool | How |
+|------|-----|
+| Neovim | `<leader>ut` |
+| Tmux | `Prefix + T` |
+| Zsh | `theme` |
+| Claude Code | `/config` → Theme |
