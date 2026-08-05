@@ -18,6 +18,9 @@ zsh_theme_prompt() {
 	typeset -g POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX='%240F╭─'
 	typeset -g POWERLEVEL9K_MULTILINE_NEWLINE_PROMPT_PREFIX='%240F├─'
 	typeset -g POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX='%240F╰─'
+
+	# The OS icon has no background either — see .p10k.zsh.
+	typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=236
 }
 
 zsh_theme_syntax() {

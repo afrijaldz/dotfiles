@@ -132,9 +132,12 @@
   typeset -g POWERLEVEL9K_EMPTY_LINE_LEFT_PROMPT_LAST_SEGMENT_END_SYMBOL=
 
   #################################[ os_icon: os identifier ]##################################
-  # OS identifier color.
-  typeset -g POWERLEVEL9K_OS_ICON_FOREGROUND=232
-  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=7
+  # OS identifier color. Transparent background: this used to be ANSI 7, which
+  # is whatever the terminal scheme says it is — light schemes tend to render it
+  # dark so their default text stays readable, and the near-black glyph then
+  # disappeared into it. The glyph now sits on the terminal background, so its
+  # color is mode-dependent and comes from .config/zsh/themes/.
+  typeset -g POWERLEVEL9K_OS_ICON_BACKGROUND=
   # Custom icon.
   # typeset -g POWERLEVEL9K_OS_ICON_CONTENT_EXPANSION='⭐'
 

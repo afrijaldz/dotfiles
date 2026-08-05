@@ -75,8 +75,9 @@ git config --global user.email "you@example.com"
 2. **Tmux plugins**: Open tmux and press `prefix+I` (Ctrl+A then Shift+I)
 3. **Customize prompt**: Run `p10k configure` if you want to tweak Powerlevel10k.
    Note that it **regenerates `.p10k.zsh` from scratch**, dropping the contrast
-   fixes committed here (the error segment and the Git `meta` color). Re-apply
-   them from git history afterwards, or keep the diff handy.
+   fixes committed here (the error segment, the Git `meta` color, and the
+   transparent OS icon). Re-apply them from git history afterwards, or keep the
+   diff handy.
 4. **Neovim**: LazyVim auto-installs plugins on first launch
 5. **Theme**: everything starts light — see [Light and dark](#light-and-dark) to switch
 
