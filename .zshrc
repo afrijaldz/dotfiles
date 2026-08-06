@@ -86,19 +86,21 @@ n() {
 }
 
 # nnn configuration
+# Only bookmarks that exist on every machine live here. Per-machine ones go in
+# ~/.zshrc.local, which is sourced below — append there rather than reassigning:
+#   export NNN_BMS="$NNN_BMS;w:$HOME/some-project"
 export NNN_OPTS="eH"
-export NNN_BMS="m:$HOME/meridian;t:$HOME/trading-meteora;d:$HOME/dotfiles;D:$HOME/Downloads"
+export NNN_BMS="d:$HOME/dotfiles;D:$HOME/Downloads"
 export NNN_COLORS="1234"
 
 # Bitwarden SSH agent — override gnome-keyring agent only when the
 # Bitwarden desktop socket exists (safe on machines without it running)
 [[ -S "$HOME/.bitwarden-ssh-agent.sock" ]] && export SSH_AUTH_SOCK="$HOME/.bitwarden-ssh-agent.sock"
 
-# Machine-specific config (NVM, Bun, Solana, PHP, etc.)
+# Machine-specific config — anything tied to one machine's paths, toolchains or
+# projects (version managers, language runtimes, extra PATH entries, local
+# bookmarks). Not tracked in git; see zshrc.local.template for a starting point.
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-
-# Hermes agent env (WSL)
-[[ -f ~/.local/bin/env ]] && source ~/.local/bin/env
 
 # atuin — put the binary on PATH, THEN load the shell integration (Ctrl-R /
 # history search). Both guarded so a machine without atuin doesn't error. The
@@ -110,6 +112,8 @@ command -v atuin &>/dev/null && eval "$(atuin init zsh)"
 # loads and restores it at the end. A truncated/regenerated config can drop
 # that restore, leaking `no_aliases` globally and silently killing every alias
 # (v, td, …). Force `aliases` back on as the last line so they always work.
+#
+# Keep this last. Installers that append to ~/.zshrc write into this tracked
+# file, because ~/.zshrc is a symlink to it — move anything they add into
+# ~/.zshrc.local instead of leaving it below this line.
 setopt aliases
-
-
