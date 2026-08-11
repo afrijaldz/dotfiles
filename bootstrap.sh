@@ -91,9 +91,19 @@ fi
 # ──────────────────────────────
 NERD_FONT_INSTALLED=false
 
-# Check if any Nerd Font is already installed
+# Check if any Nerd Font is already installed.
+# fc-list is the Linux answer, but stock macOS has no fontconfig at all — there
+# the fonts are plain files in the Library font dirs, so list those too.
+font_index() {
+  fc-list 2>/dev/null
+  if [ "$PLATFORM" = "macos" ]; then
+    ls "$HOME/Library/Fonts" /Library/Fonts 2>/dev/null
+  fi
+}
+
+FONT_INDEX="$(font_index)"
 for pattern in "MesloLGS" "JetBrainsMono" "FiraCode" "Fira Code" "Hack" "Nerd Font" "NerdFont"; do
-  if fc-list 2>/dev/null | grep -iq "$pattern"; then
+  if printf '%s\n' "$FONT_INDEX" | grep -iq "$pattern"; then
     NERD_FONT_INSTALLED=true
     break
   fi
@@ -225,14 +235,23 @@ install_neovim() {
     echo "==> neovim already installed ($(nvim --version | head -1))"
     return
   fi
-  if [ "$PKG_MANAGER" = "apt" ]; then
-    echo "==> Installing neovim from official tarball..."
+  # The tarball is per-architecture, so an ARM box (Pi, ARM VPS, ARM container)
+  # must not be handed the x86_64 build. Anything else falls through to the
+  # distro package, which is better than installing a binary that won't run.
+  local nvim_arch=""
+  case "$(uname -m)" in
+    x86_64 | amd64)  nvim_arch="x86_64" ;;
+    aarch64 | arm64) nvim_arch="arm64"  ;;
+  esac
+
+  if [ "$PKG_MANAGER" = "apt" ] && [ -n "$nvim_arch" ]; then
+    echo "==> Installing neovim from official tarball (linux-$nvim_arch)..."
     local tmp; tmp="$(mktemp -d)"
     curl -Lo "$tmp/nvim.tar.gz" \
-      https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+      "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${nvim_arch}.tar.gz"
     sudo rm -rf /opt/nvim
     sudo tar -C /opt -xzf "$tmp/nvim.tar.gz"
-    sudo mv /opt/nvim-linux-x86_64 /opt/nvim
+    sudo mv "/opt/nvim-linux-${nvim_arch}" /opt/nvim
     sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
     rm -rf "$tmp"
   else
@@ -245,7 +264,7 @@ install_neovim
 install_pkg nnn
 
 # ──────────────────────────────
-# 10. Install tmux clipboard helper
+# 10. Install tmux clipboard helpers
 # ──────────────────────────────
 TMUX_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$TMUX_BIN_DIR"
@@ -278,6 +297,43 @@ fi
 EOF
 chmod +x "$TMUX_BIN_DIR/tmux-yank"
 echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
+
+cat > "$TMUX_BIN_DIR/tmux-paste" << 'EOF'
+#!/bin/bash
+# Cross-platform clipboard paste for tmux — the mirror of tmux-yank.
+# Detects available clipboard tool and writes its contents to stdout.
+
+read_clipboard() {
+  if command -v pbpaste &>/dev/null; then
+    # macOS
+    pbpaste
+  elif command -v powershell.exe &>/dev/null; then
+    # WSL
+    powershell.exe -NoProfile -Command Get-Clipboard
+  elif command -v wl-paste &>/dev/null; then
+    # Wayland
+    wl-paste --no-newline
+  elif command -v xclip &>/dev/null; then
+    # X11
+    xclip -selection clipboard -o
+  elif command -v xsel &>/dev/null; then
+    # X11 (alternative)
+    xsel --clipboard --output
+  else
+    tmux display-message "No clipboard tool found."
+    return 1
+  fi
+}
+
+# Command substitution eats trailing newlines, which is what we want: pasting a
+# copied line should not press enter for us. `tr -d` drops the CRs that WSL's
+# Get-Clipboard adds.
+clip="$(read_clipboard | tr -d '\r')" || exit 1
+[ -n "$clip" ] || exit 0
+printf '%s' "$clip"
+EOF
+chmod +x "$TMUX_BIN_DIR/tmux-paste"
+echo "==> Installed tmux-paste to $TMUX_BIN_DIR/tmux-paste"
 
 # ──────────────────────────────
 # 11. Migrate existing .zshrc → .zshrc.local
@@ -447,6 +503,53 @@ if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
             "$HOME/.config/systemd/user/tmux.service"
   systemctl --user daemon-reload 2>/dev/null || true
   systemctl --user enable tmux.service 2>/dev/null || true
+
+# macOS equivalent: a launchd agent. It is GENERATED rather than tracked and
+# symlinked, because a plist needs the absolute path to tmux and launchd has no
+# %h-style placeholder — a committed copy would bake one machine's username and
+# Homebrew prefix into a public repo.
+#
+# Note there is no ExecStop counterpart in launchd, so shutdown relies on
+# continuum's autosave plus the client-detached hook in tmux.conf.
+elif [ "$PLATFORM" = "macos" ] && command -v tmux >/dev/null 2>&1; then
+  TMUX_BIN="$(command -v tmux)"
+  LAUNCH_AGENTS="$HOME/Library/LaunchAgents"
+  TMUX_PLIST="$LAUNCH_AGENTS/dotfiles.tmux.plist"
+  mkdir -p "$LAUNCH_AGENTS"
+
+  cat > "$TMUX_PLIST" << PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>dotfiles.tmux</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${TMUX_BIN}</string>
+    <string>start-server</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <!-- One shot: start-server forks and exits, and tmux.conf sets
+       \`exit-empty off\` so the server survives having no session yet. -->
+  <key>KeepAlive</key>
+  <false/>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>$(dirname "$TMUX_BIN"):/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+</dict>
+</plist>
+PLIST
+
+  # Reload so an updated plist takes effect without a logout. bootout fails the
+  # first time (nothing loaded yet), which is fine.
+  launchctl bootout "gui/$(id -u)/dotfiles.tmux" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$TMUX_PLIST" 2>/dev/null \
+    && echo "    launchd agent: dotfiles.tmux loaded" \
+    || echo "    launchd agent written to $TMUX_PLIST (loads at next login)"
 fi
 
 # ──────────────────────────────

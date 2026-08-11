@@ -14,7 +14,16 @@
 set -u
 
 CONF_DIR="${HOME}/.config/tmux"
-THEMEPACK_DIR="${HOME}/.tmux/plugins/tmux-themepack"
+
+# Where TPM actually puts plugins: ~/.config/tmux/plugins/ when the config lives
+# at the XDG path, ~/.tmux/plugins/ otherwise. Hardcoding either one breaks on
+# the other layout, so ask tmux for the path TPM exported.
+PLUGINS_DIR="$(tmux show-environment -g TMUX_PLUGIN_MANAGER_PATH 2>/dev/null |
+	sed -n 's/^TMUX_PLUGIN_MANAGER_PATH=//p')"
+[ -n "$PLUGINS_DIR" ] || PLUGINS_DIR="${HOME}/.tmux/plugins"
+PLUGINS_DIR="${PLUGINS_DIR%/}"
+
+THEMEPACK_DIR="${PLUGINS_DIR}/tmux-themepack"
 
 mode="${1:-toggle}"
 

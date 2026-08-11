@@ -16,7 +16,7 @@ Prefix is `Ctrl+A`.
 | `Prefix + r` | Reload tmux config ★ |
 | `Prefix + m` | Toggle pane zoom ★ |
 | `Prefix + T` | Toggle dark/light theme ★ |
-| `Prefix + P` | Paste from the Windows clipboard (WSL) ★ |
+| `Prefix + P` | Paste from the system clipboard ★ |
 | `Prefix + h/j/k/l` | Resize pane (repeatable) ★ |
 | `Ctrl+h/j/k/l` | Navigate panes, no prefix — skips to Vim when a Vim pane is focused ★ |
 | `Ctrl+\` | Toggle last pane, no prefix ★ |
