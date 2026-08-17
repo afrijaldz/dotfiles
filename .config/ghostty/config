@@ -1,0 +1,4 @@
+# Selecting text puts it in CLIPBOARD, not just PRIMARY.
+# Ghostty's default copies to PRIMARY only, which middle-click pastes but
+# Ctrl+V in a browser never sees.
+copy-on-select = clipboard

@@ -272,7 +272,12 @@ mkdir -p "$TMUX_BIN_DIR"
 cat > "$TMUX_BIN_DIR/tmux-yank" << 'EOF'
 #!/bin/bash
 # Cross-platform clipboard yank for tmux
-# Detects available clipboard tool and pipes stdin to it.
+# Pipes stdin to the clipboard tool that matches the RUNNING session.
+#
+# Detection is by environment, not by binary presence: wl-copy can be
+# installed on a machine that is currently running an X11 session, and it
+# exits 1 there. tmux's copy-pipe reports nothing when that happens, so the
+# yank silently goes nowhere.
 
 if command -v pbcopy &>/dev/null; then
   # macOS
@@ -280,13 +285,13 @@ if command -v pbcopy &>/dev/null; then
 elif command -v clip.exe &>/dev/null; then
   # WSL
   clip.exe
-elif command -v wl-copy &>/dev/null; then
+elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy &>/dev/null; then
   # Wayland
   wl-copy
-elif command -v xclip &>/dev/null; then
+elif [ -n "$DISPLAY" ] && command -v xclip &>/dev/null; then
   # X11
   xclip -selection clipboard
-elif command -v xsel &>/dev/null; then
+elif [ -n "$DISPLAY" ] && command -v xsel &>/dev/null; then
   # X11 (alternative)
   xsel --clipboard --input
 else
@@ -434,6 +439,10 @@ link_file "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
 # Light/dark theme files that .zshrc sources at startup. Without this link the
 # shell silently falls back to the plugin defaults, which are dark-only.
 link_file "$DOTFILES_DIR/.config/zsh"  "$HOME/.config/zsh"
+# Only the config file, not the whole directory: Ghostty also keeps generated
+# theme files in there that are machine-local and must not be tracked.
+mkdir -p "$HOME/.config/ghostty"
+link_file "$DOTFILES_DIR/.config/ghostty/config" "$HOME/.config/ghostty/config"
 
 # Claude Code hooks (daily work recap into a notes folder). Linking the
 # directory is safe: Claude Code does not create ~/.claude/hooks itself.
