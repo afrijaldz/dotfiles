@@ -171,6 +171,11 @@ else
   echo "==> TPM already installed"
 fi
 
+# tmux-resurrect drops a pane's cwd when the pane title is empty. TPM restores
+# the stock scripts on every plugin update, so re-apply the fix here; the
+# script is idempotent and no-ops when resurrect isn't installed yet.
+"$DOTFILES_DIR/.config/tmux/scripts/patch-resurrect-empty-title.sh"
+
 # ──────────────────────────────
 # 8. Install atuin (sync shell history)
 # ──────────────────────────────
