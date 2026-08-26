@@ -269,49 +269,22 @@ install_neovim
 install_pkg nnn
 
 # ──────────────────────────────
-# 10. Install tmux clipboard helpers
+# 10. Install the tmux paste helper
 # ──────────────────────────────
 TMUX_BIN_DIR="$HOME/.local/bin"
 mkdir -p "$TMUX_BIN_DIR"
 
-cat > "$TMUX_BIN_DIR/tmux-yank" << 'EOF'
-#!/bin/bash
-# Cross-platform clipboard yank for tmux
-# Pipes stdin to the clipboard tool that matches the RUNNING session.
-#
-# Detection is by environment, not by binary presence: wl-copy can be
-# installed on a machine that is currently running an X11 session, and it
-# exits 1 there. tmux's copy-pipe reports nothing when that happens, so the
-# yank silently goes nowhere.
-
-if command -v pbcopy &>/dev/null; then
-  # macOS
-  pbcopy
-elif command -v clip.exe &>/dev/null; then
-  # WSL
-  clip.exe
-elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy &>/dev/null; then
-  # Wayland
-  wl-copy
-elif [ -n "$DISPLAY" ] && command -v xclip &>/dev/null; then
-  # X11
-  xclip -selection clipboard
-elif [ -n "$DISPLAY" ] && command -v xsel &>/dev/null; then
-  # X11 (alternative)
-  xsel --clipboard --input
-else
-  # Fallback: show in tmux message
-  cat > /tmp/tmux-yank.txt
-  tmux display-message "No clipboard tool found. Yank saved to /tmp/tmux-yank.txt"
-fi
-EOF
-chmod +x "$TMUX_BIN_DIR/tmux-yank"
-echo "==> Installed tmux-yank to $TMUX_BIN_DIR/tmux-yank"
-
+# There is no matching yank helper: tmux copies through OSC 52, which leaves the
+# outer terminal as the single owner of the system clipboard. A helper piping to
+# xclip would claim that ownership too, and the app pasting from whichever of the
+# two lost the race hangs waiting for a reply.
 cat > "$TMUX_BIN_DIR/tmux-paste" << 'EOF'
 #!/bin/bash
-# Cross-platform clipboard paste for tmux — the mirror of tmux-yank.
-# Detects available clipboard tool and writes its contents to stdout.
+# Cross-platform clipboard paste for tmux.
+#
+# Detection is by environment, not by binary presence: wl-paste can be installed
+# on a machine that is currently running an X11 session, where it exits 1 and the
+# paste silently comes back empty.
 
 read_clipboard() {
   if command -v pbpaste &>/dev/null; then
@@ -320,13 +293,13 @@ read_clipboard() {
   elif command -v powershell.exe &>/dev/null; then
     # WSL
     powershell.exe -NoProfile -Command Get-Clipboard
-  elif command -v wl-paste &>/dev/null; then
+  elif [ -n "$WAYLAND_DISPLAY" ] && command -v wl-paste &>/dev/null; then
     # Wayland
     wl-paste --no-newline
-  elif command -v xclip &>/dev/null; then
+  elif [ -n "$DISPLAY" ] && command -v xclip &>/dev/null; then
     # X11
     xclip -selection clipboard -o
-  elif command -v xsel &>/dev/null; then
+  elif [ -n "$DISPLAY" ] && command -v xsel &>/dev/null; then
     # X11 (alternative)
     xsel --clipboard --output
   else
@@ -344,6 +317,8 @@ printf '%s' "$clip"
 EOF
 chmod +x "$TMUX_BIN_DIR/tmux-paste"
 echo "==> Installed tmux-paste to $TMUX_BIN_DIR/tmux-paste"
+
+rm -f "$TMUX_BIN_DIR/tmux-yank"
 
 # ──────────────────────────────
 # 11. Migrate existing .zshrc → .zshrc.local

@@ -28,7 +28,7 @@ The bootstrap script handles:
 - Installing zsh (if missing) and setting it as the default shell
 - Detecting your package manager (apt, dnf, pacman, zypper, apk, brew)
 - Installing oh-my-zsh, Powerlevel10k, zsh plugins
-- Installing TPM (Tmux Plugin Manager) and cross-platform clipboard helpers
+- Installing TPM (Tmux Plugin Manager) and the cross-platform tmux paste helper
 - Symlinking all config files (backs up existing ones first)
 - Auto-migrating your existing `.zshrc` to `.zshrc.local` (machine-specific config)
 
