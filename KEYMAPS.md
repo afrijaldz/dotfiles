@@ -18,7 +18,7 @@ Prefix is `Ctrl+A`.
 | `Prefix + T` | Toggle dark/light theme ★ |
 | `Prefix + P` | Paste from the system clipboard ★ |
 | `Prefix + h/j/k/l` | Resize pane (repeatable) ★ |
-| `Ctrl+h/j/k/l` | Navigate panes, no prefix — skips to Vim when a Vim pane is focused ★ |
+| `Ctrl+h/j/k/l` | Navigate panes, no prefix — crosses into Neovim splits ★ |
 | `Ctrl+\` | Toggle last pane, no prefix ★ |
 | `Prefix + q` | Show pane numbers |
 | `Prefix + t` | Clock |
@@ -35,6 +35,8 @@ Prefix is `Ctrl+A`.
 | `Space` | — | Leader key |
 | `jj` | Insert | Exit insert mode ★ |
 | `jj` | Terminal | Exit terminal mode ★ |
+| `Ctrl+h/j/k/l` | Normal | Move between splits, and out into tmux panes ★ |
+| `Ctrl+\` | Normal | Move to the previous split or tmux pane ★ |
 | `<leader>ut` | Normal | Toggle dark/light theme ★ |
 | `<leader>e` | Normal | File explorer |
 | `<leader>ff` | Normal | Find files |
@@ -51,6 +53,13 @@ Prefix is `Ctrl+A`.
 | `]d` / `[d` | Normal | Next / previous diagnostic |
 | `gd` / `gr` | Normal | Go to definition / references (once an LSP attaches) |
 | `K` | Normal | Hover documentation (once an LSP attaches) |
+
+Split and pane navigation is one flat grid: `Ctrl+h/j/k/l` moves between
+Neovim splits and keeps going into the surrounding tmux panes once the cursor
+reaches the edge. It takes both halves — the `is_vim` bindings in
+`.config/tmux/tmux.conf` forward the key into Neovim, and vim-tmux-navigator
+decides whether to move a split or hand the key back to tmux. Remove either
+half and the key dead-ends inside Neovim.
 
 `<leader>sk` lists every active mapping, which beats keeping a longer table here
 in sync. For upstream defaults see `:help lazyvim-keymaps`.
