@@ -8,15 +8,15 @@ exhaustive.
 
 Prefix is `Ctrl+A`. Pressing it opens a menu of the keys below, so the table
 is only here for reference — the menu is the source of truth and lives in
-`.config/tmux/prefix-menu.conf`. Keys the menu doesn't list (window numbers,
-`q`, `t`, `I`, `U`, ...) are reached through `Ctrl+A Space`, which drops into
-the plain prefix table with every tmux default. On a terminal too short for
-the menu, `Ctrl+A` goes straight to that table.
+`.config/tmux/prefix-menu.conf`. `Space` turns to a second page
+(`prefix-menu-more.conf`) with the stock bindings worth a hint; `Space` again
+drops into the plain prefix table with every tmux default. On a terminal too
+short for the menu, `Ctrl+A` goes straight to that table.
 
 | Key | Action |
 |-----|--------|
 | `Ctrl+A` | Prefix — opens the hint menu ★ |
-| `Prefix + Space` | Plain prefix table, for keys the menu doesn't list ★ |
+| `Prefix + Space` | Second menu page; `Space` again for the plain prefix table ★ |
 | `Prefix + Ctrl+A` | Send a literal Ctrl+A to the app ★ |
 | `Prefix + \|` | Split pane **horizontal** ★ |
 | `Prefix + -` | Split pane **vertical** ★ |

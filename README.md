@@ -224,7 +224,7 @@ takes effect in the next session (or after opening `/hooks` once).
 ├── .config/
 │   ├── zsh/themes/         # light.zsh / dark.zsh — prompt + syntax highlighting
 │   ├── tmux/tmux.conf      # Tmux config
-│   ├── tmux/prefix-menu.conf # The hint menu that opens on Ctrl+A
+│   ├── tmux/prefix-menu*.conf # The hint menu that opens on Ctrl+A
 │   ├── tmux/themes/        # light.conf — palette override for tmux-themepack
 │   ├── tmux/scripts/       # tmux helpers (resurrect save guard, theme toggle)
 │   ├── systemd/user/       # tmux.service — auto-start server at login (Linux;
