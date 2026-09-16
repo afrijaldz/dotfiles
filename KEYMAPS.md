@@ -13,6 +13,11 @@ is only here for reference — the menu is the source of truth and lives in
 drops into the plain prefix table with every tmux default. On a terminal too
 short for the menu, `Ctrl+A` goes straight to that table.
 
+Anything that needs a yes/no or some text — kill pane/window, rename
+window/session, the `:` command line — opens a centered dialog instead of the
+status-line prompt bottom-left, which is easy to miss. Notices like "Config
+reloaded" do the same; any key closes them.
+
 | Key | Action |
 |-----|--------|
 | `Ctrl+A` | Prefix — opens the hint menu ★ |
@@ -25,7 +30,7 @@ short for the menu, `Ctrl+A` goes straight to that table.
 | `Prefix + T` | Toggle dark/light theme ★ |
 | `Prefix + P` | Paste from the system clipboard ★ |
 | `Prefix + h/j/k/l` | Resize pane (repeatable) ★ |
-| `Prefix + x` | Kill pane |
+| `Prefix + x` | Kill pane (asks first) ★ |
 | `Prefix + c` / `,` / `n` / `p` / `w` | New / rename / next / previous / choose window |
 | `Prefix + s` / `d` | Choose session / detach |
 | `Ctrl+h/j/k/l` | Navigate panes, no prefix — crosses into Neovim splits ★ |

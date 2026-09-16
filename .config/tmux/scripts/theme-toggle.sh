@@ -25,6 +25,12 @@ PLUGINS_DIR="${PLUGINS_DIR%/}"
 
 THEMEPACK_DIR="${PLUGINS_DIR}/tmux-themepack"
 
+# Centered one-line dialog, closed by any key. display-message would put the
+# text bottom-left on the status line where it is easy to miss.
+notify() {
+	tmux display-menu -T ' tmux ' -x C -y C "$1" '' ''
+}
+
 mode="${1:-toggle}"
 
 if [ "$mode" = "toggle" ]; then
@@ -37,7 +43,7 @@ fi
 case "$mode" in
 	light | dark) ;;
 	*)
-		tmux display-message "theme-toggle: unknown mode '${mode}'"
+		notify "theme-toggle: unknown mode '${mode}'"
 		exit 1
 		;;
 esac
@@ -49,7 +55,7 @@ themepack="$(tmux show -gv @themepack 2>/dev/null)"
 
 theme_file="${THEMEPACK_DIR}/${themepack}.tmuxtheme"
 if [ ! -f "$theme_file" ]; then
-	tmux display-message "theme-toggle: no such theme '${themepack}'"
+	notify "theme-toggle: no such theme '${themepack}'"
 	exit 1
 fi
 
@@ -72,4 +78,4 @@ clear_opts -gw
 
 tmux source-file "$theme_file"
 tmux set -g @theme-mode "$mode"
-tmux display-message "tmux theme: ${mode}"
+notify "tmux theme: ${mode}"
