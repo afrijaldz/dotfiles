@@ -8,7 +8,7 @@ Personal dotfiles for macOS and Linux. Consistent development environment across
 |-----------|--------|-------|
 | **Shell** | `.zshrc`, `.p10k.zsh` | Zsh + oh-my-zsh + Powerlevel10k |
 | **Editor** | `.config/nvim/` | Neovim with LazyVim |
-| **Terminal** | `.config/tmux/tmux.conf` | Tmux with Ctrl+A prefix, vim-style navigation, TPM |
+| **Terminal** | `.config/tmux/tmux.conf` | Tmux with Ctrl+A prefix (opens a hint menu), vim-style navigation, TPM |
 | **Prompt** | `.p10k.zsh` | Powerlevel10k (configure per-machine with `p10k configure`) |
 | **Themes** | `.config/zsh/themes/`, `.config/tmux/themes/` | Light/dark, see [Light and dark](#light-and-dark) |
 
@@ -72,7 +72,8 @@ git config --global user.email "you@example.com"
 ## Post-install
 
 1. **Restart your shell** or run `source ~/.zshrc`
-2. **Tmux plugins**: Open tmux and press `prefix+I` (Ctrl+A then Shift+I)
+2. **Tmux plugins**: Open tmux and press `Ctrl+A Space I` (Space skips the
+   prefix hint menu, which does not list TPM keys)
 3. **Customize prompt**: Run `p10k configure` if you want to tweak Powerlevel10k.
    Note that it **regenerates `.p10k.zsh` from scratch**, dropping the contrast
    fixes committed here (the error segment, the Git `meta` color, and the
@@ -223,6 +224,7 @@ takes effect in the next session (or after opening `/hooks` once).
 ├── .config/
 │   ├── zsh/themes/         # light.zsh / dark.zsh — prompt + syntax highlighting
 │   ├── tmux/tmux.conf      # Tmux config
+│   ├── tmux/prefix-menu.conf # The hint menu that opens on Ctrl+A
 │   ├── tmux/themes/        # light.conf — palette override for tmux-themepack
 │   ├── tmux/scripts/       # tmux helpers (resurrect save guard, theme toggle)
 │   ├── systemd/user/       # tmux.service — auto-start server at login (Linux;

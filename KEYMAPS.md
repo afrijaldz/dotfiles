@@ -6,11 +6,18 @@ exhaustive.
 
 ## Tmux
 
-Prefix is `Ctrl+A`.
+Prefix is `Ctrl+A`. Pressing it opens a menu of the keys below, so the table
+is only here for reference — the menu is the source of truth and lives in
+`.config/tmux/prefix-menu.conf`. Keys the menu doesn't list (window numbers,
+`q`, `t`, `I`, `U`, ...) are reached through `Ctrl+A Space`, which drops into
+the plain prefix table with every tmux default. On a terminal too short for
+the menu, `Ctrl+A` goes straight to that table.
 
 | Key | Action |
 |-----|--------|
-| `Ctrl+A` | Prefix ★ |
+| `Ctrl+A` | Prefix — opens the hint menu ★ |
+| `Prefix + Space` | Plain prefix table, for keys the menu doesn't list ★ |
+| `Prefix + Ctrl+A` | Send a literal Ctrl+A to the app ★ |
 | `Prefix + \|` | Split pane **horizontal** ★ |
 | `Prefix + -` | Split pane **vertical** ★ |
 | `Prefix + r` | Reload tmux config ★ |
@@ -18,12 +25,15 @@ Prefix is `Ctrl+A`.
 | `Prefix + T` | Toggle dark/light theme ★ |
 | `Prefix + P` | Paste from the system clipboard ★ |
 | `Prefix + h/j/k/l` | Resize pane (repeatable) ★ |
+| `Prefix + x` | Kill pane |
+| `Prefix + c` / `,` / `n` / `p` / `w` | New / rename / next / previous / choose window |
+| `Prefix + s` / `d` | Choose session / detach |
 | `Ctrl+h/j/k/l` | Navigate panes, no prefix — crosses into Neovim splits ★ |
 | `Ctrl+\` | Toggle last pane, no prefix ★ |
-| `Prefix + q` | Show pane numbers |
-| `Prefix + t` | Clock |
-| `Prefix + I` | Install TPM plugins |
-| `Prefix + U` | Update TPM plugins |
+| `Prefix + Space q` | Show pane numbers |
+| `Prefix + Space t` | Clock |
+| `Prefix + Space I` | Install TPM plugins |
+| `Prefix + Space U` | Update TPM plugins |
 | **Copy mode** (`Prefix + [`) | |
 | `v` | Start selection ★ |
 | `y` | Yank to clipboard ★ |
