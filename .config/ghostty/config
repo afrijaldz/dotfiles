@@ -2,3 +2,8 @@
 # Ghostty's default copies to PRIMARY only, which middle-click pastes but
 # Ctrl+V in a browser never sees.
 copy-on-select = clipboard
+
+# The macOS system alert sound never plays on this machine, so play Glass
+# directly; Claude Code's bell reaches here through tmux.
+bell-features = audio,attention,title
+bell-audio-path = /System/Library/Sounds/Glass.aiff
