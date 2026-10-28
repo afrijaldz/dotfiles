@@ -12,6 +12,10 @@ Environment=DISPLAY=:0
 Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 # `start-server` only — tmux.conf sets `exit-empty off` so the server doesn't
 # die immediately before tmux-continuum gets to restore the sessions.
+# Repair `last` before continuum restores from it: a save taken by the detach
+# hook while the server was going down can leave it pointing at an empty or
+# deleted save.
+ExecStartPre=%h/.config/tmux/scripts/resurrect-repair-last.sh
 ExecStart=/usr/bin/env tmux start-server
 
 # Via the guard, NOT save.sh directly: save.sh run when the server is already dead

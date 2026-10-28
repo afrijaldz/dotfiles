@@ -12,8 +12,6 @@
 
 set -u
 
-RESURRECT_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/tmux/resurrect"
-
 # Same reason as in theme-toggle.sh: TPM's plugin dir depends on where the
 # config lives, so read the path TPM exported instead of assuming one.
 PLUGINS_DIR="$(tmux show-environment -g TMUX_PLUGIN_MANAGER_PATH 2>/dev/null |
@@ -26,22 +24,6 @@ tmux has-session >/dev/null 2>&1 || exit 0
 
 "$SAVE_SCRIPT" quiet
 
-# Second safety belt: if the save we just made turns out to be empty anyway, drop it
-# and point `last` back to the most recent valid save file.
-#
-# Plain `readlink`, not `readlink -f`: resurrect writes `last` as a relative
-# symlink to a sibling file, so the bare target name is all we need — and `-f`
-# is GNU-only on older macOS. Likewise `find -printf` is GNU-only, so the loop
-# below strips directories with basename instead.
-last_target="$(readlink "${RESURRECT_DIR}/last" 2>/dev/null || true)"
-last_file="${RESURRECT_DIR}/$(basename "${last_target:-.}")"
-if [ -n "$last_target" ] && [ -f "$last_file" ] && [ ! -s "$last_file" ]; then
-	rm -f "$last_file"
-	newest_valid=""
-	for f in "$RESURRECT_DIR"/tmux_resurrect_*.txt; do
-		[ -s "$f" ] || continue
-		name="$(basename "$f")"
-		[ "$name" \> "$newest_valid" ] && newest_valid="$name"
-	done
-	[ -n "$newest_valid" ] && ln -sfn "$newest_valid" "${RESURRECT_DIR}/last"
-fi
+# Second safety belt: if the save we just made turns out to be empty anyway,
+# point `last` back to the most recent valid save file and drop the empty one.
+"$(dirname "$0")/resurrect-repair-last.sh"
