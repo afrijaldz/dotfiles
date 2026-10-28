@@ -4,8 +4,8 @@
 # Why it's needed: save.sh run when the tmux server is ALREADY dead still creates
 # a new save file — but it's 0 bytes — and then updates the `last` symlink to it.
 # The next restore then brings back "nothing", i.e. all sessions are lost. This
-# happens easily in the systemd unit's ExecStop during shutdown, because the
-# server may already have been killed before ExecStop gets to run.
+# can happen in the client-detached hook when the server is going down together
+# with the last client.
 #
 # Guard here: if there's no live server/session, don't save at all —
 # leave the last valid save as `last`.

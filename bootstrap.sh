@@ -482,10 +482,11 @@ PY
 fi
 
 # tmux server unit — start the server at login so tmux-continuum can restore
-# sessions before we open a terminal, and save once more at shutdown.
-# We keep our own unit (not the one tmux-continuum generates) because its
-# ExecStop has to go through resurrect-save-guard.sh; continuum only writes the
-# unit if the file doesn't exist yet, so this symlink wins.
+# sessions before we open a terminal.
+# We keep our own unit (not the one tmux-continuum generates) because it must
+# not save at shutdown and must repair `last` before the server starts;
+# continuum only writes the unit if the file doesn't exist yet, so this symlink
+# wins.
 if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
   mkdir -p "$HOME/.config/systemd/user"
   link_file "$DOTFILES_DIR/.config/systemd/user/tmux.service" \
@@ -498,8 +499,8 @@ if command -v systemctl >/dev/null 2>&1 && [ -d /run/systemd/system ]; then
 # %h-style placeholder — a committed copy would bake one machine's username and
 # Homebrew prefix into a public repo.
 #
-# Note there is no ExecStop counterpart in launchd, so shutdown relies on
-# continuum's autosave plus the client-detached hook in tmux.conf.
+# Like the systemd unit, it does not save at shutdown; continuum's autosave
+# plus the client-detached hook in tmux.conf keep the save current.
 elif [ "$PLATFORM" = "macos" ] && command -v tmux >/dev/null 2>&1; then
   TMUX_BIN="$(command -v tmux)"
   LAUNCH_AGENTS="$HOME/Library/LaunchAgents"

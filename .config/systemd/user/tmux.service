@@ -18,10 +18,11 @@ Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
 ExecStartPre=%h/.config/tmux/scripts/resurrect-repair-last.sh
 ExecStart=/usr/bin/env tmux start-server
 
-# Via the guard, NOT save.sh directly: save.sh run when the server is already dead
-# writes a 0-byte save and then updates the `last` symlink to it, and the next boot's
-# restore comes up empty.
-ExecStop=%h/.config/tmux/scripts/resurrect-save-guard.sh
+# No save here. By the time ExecStop runs, shutdown has already killed some of
+# the programs in the panes, so a save then keeps only part of the session and
+# the next restore brings back that part. The detach hook in tmux.conf has
+# already saved the full session when the terminal closed, and continuum's
+# autosave covers the rest.
 ExecStop=/usr/bin/env tmux kill-server
 KillMode=control-group
 

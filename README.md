@@ -92,8 +92,8 @@ The mechanism depends on the OS, and `bootstrap.sh` picks it for you:
 
 | | Started by | Saves at shutdown |
 |---|---|---|
-| **Linux (systemd)** | `~/.config/systemd/user/tmux.service`, symlinked and enabled | yes — the unit's `ExecStop` runs the save guard first |
-| **macOS** | `~/Library/LaunchAgents/dotfiles.tmux.plist`, generated at install time | no `ExecStop` equivalent; relies on continuum's autosave and the detach hook |
+| **Linux (systemd)** | `~/.config/systemd/user/tmux.service`, symlinked and enabled | no; relies on continuum's autosave and the detach hook |
+| **macOS** | `~/Library/LaunchAgents/dotfiles.tmux.plist`, generated at install time | no; relies on continuum's autosave and the detach hook |
 
 The plist is generated rather than tracked because it needs the absolute path
 to `tmux`, which differs per machine. On macOS `@continuum-boot` is deliberately
