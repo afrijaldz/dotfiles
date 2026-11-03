@@ -116,6 +116,7 @@ wired together, so a terminal that is only sometimes light stays workable.
 | Neovim | `<leader>ut` | monokai-nightasty; picks the style from `vim.o.background` |
 | Tmux | `Prefix + T` | applies immediately, no server restart |
 | Zsh | `theme` | re-execs the shell (see below) |
+| Ghostty | OS appearance | Monokai Pro Light / Monokai Pro |
 
 Two things are worth knowing if you change any of this:
 

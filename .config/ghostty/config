@@ -7,3 +7,6 @@ copy-on-select = clipboard
 # directly; Claude Code's bell reaches here through tmux.
 bell-features = audio,attention,title
 bell-audio-path = /System/Library/Sounds/Glass.aiff
+
+# Follows the OS appearance; the zsh and tmux toggles stay independent.
+theme = light:Monokai Pro Light,dark:Monokai Pro
