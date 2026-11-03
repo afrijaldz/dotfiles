@@ -16,7 +16,8 @@ Config: $DAILY_RECAP_CONFIG, or ~/.config/daily-recap.json
 
     {
       "notes_dir": "~/notes",           // required
-      "default_folder": "Daily",        // subfolder for unrouted work
+      "default_folder": "Daily",        // subfolder for unrouted work;
+                                        // null skips unrouted work entirely
       "language": "English",            // language to write the recap in
       "lookback_days": 7,
       "routes": [                       // optional, first match wins
@@ -101,7 +102,10 @@ def load_config():
 
 
 def buckets(cfg):
-    return [DEFAULT_BUCKET] + [r["name"] for r in cfg["routes"]]
+    names = [r["name"] for r in cfg["routes"]]
+    if cfg["default_folder"] is None:
+        return names
+    return [DEFAULT_BUCKET] + names
 
 
 def run(cmd, cwd=None):
@@ -165,6 +169,9 @@ def collect_range(cfg, days):
     }
 
     for repo in find_repos():
+        bucket = bucket_for(cfg, repo)
+        if bucket not in names:
+            continue  # unrouted, and default_folder is null
         log = run(
             [
                 "git", "log",
@@ -177,7 +184,6 @@ def collect_range(cfg, days):
         )
         if not log:
             continue
-        bucket = bucket_for(cfg, repo)
         for line in log.splitlines():
             cdate, _, rest = line.partition("\x1f")
             sha, _, subject = rest.partition("\x1f")
@@ -205,8 +211,8 @@ def collect_range(cfg, days):
                             cwd = o["cwd"]
             except OSError:
                 continue
-            if title:
-                bucket = bucket_for(cfg, cwd)
+            bucket = bucket_for(cfg, cwd)
+            if title and bucket in names:
                 for d in seen:
                     out[d][bucket]["sessions"].append(
                         {"title": title, "cwd": cwd or ""}

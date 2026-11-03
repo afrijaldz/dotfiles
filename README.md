@@ -174,7 +174,8 @@ not opted in.
 
 Each route sends work done under `path` to `folder` instead of the default one;
 first match wins, and `name` is the bucket you pass to `write`. With no routes,
-everything lands in `default_folder`.
+everything lands in `default_folder`. Set `default_folder` to `null` to recap
+only the routed work and skip everything else.
 
 Notes folders often have no version history, so the file handling is
 deliberately conservative and lives in the script rather than being re-derived
