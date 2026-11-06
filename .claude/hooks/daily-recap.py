@@ -68,9 +68,12 @@ BLOCK_RE = re.compile(
 )
 
 # Repos sit at ~/<repo> and ~/<group>/<sub>/<repo>, so 4 is deep enough.
-# Skipped trees are large and never interesting.
+# Skipped trees are large and never interesting. Library also must not be
+# entered: on macOS, reading other apps' data there raises a permission prompt.
 SCAN_DEPTH = 4
-SKIP_PARTS = {".oh-my-zsh", ".nvm", "node_modules", ".cache", ".local", "jobs"}
+SKIP_PARTS = {
+    ".oh-my-zsh", ".nvm", "node_modules", ".cache", ".local", "jobs", "Library",
+}
 
 
 def load_config():
@@ -122,14 +125,25 @@ def git_email():
     return run(["git", "config", "user.email"]) or ""
 
 
+def subdirs(path):
+    """Subdirectories of path that are worth scanning. Unreadable ones are left out."""
+    try:
+        children = list(path.iterdir())
+    except OSError:
+        return []
+    return [c for c in children if c.name not in SKIP_PARTS and c.is_dir()]
+
+
 def find_repos():
     repos = []
-    for depth in range(1, SCAN_DEPTH + 1):
-        for git_dir in HOME.glob("/".join(["*"] * depth) + "/.git"):
-            repo = git_dir.parent
-            if SKIP_PARTS & set(repo.parts):
-                continue
-            repos.append(repo)
+    level = subdirs(HOME)
+    for _ in range(SCAN_DEPTH):
+        next_level = []
+        for directory in level:
+            if (directory / ".git").exists():
+                repos.append(directory)
+            next_level.extend(subdirs(directory))
+        level = next_level
     return sorted(set(repos))
 
 
